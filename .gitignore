@@ -1,0 +1,6 @@
+.env
+out/
+samples/local/
+*.sqlite
+docs/
+.superpowers/
