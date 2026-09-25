@@ -1,0 +1,33 @@
+{
+  "name": "po-mismatch",
+  "note": "The amount matches the PO exactly, but the lines are desk lamps, not coffee. Only reading catches it.",
+  "request": {
+    "invoice_text": "Nordlys Kontorservice AS\nOrg.nr 999 200 001 MVA\nFaktura 20960, dato 20.09.2026\nDeres bestilling: PO-2026-118\n\nSkrivebordslampe LED, hvit  4 x 1 042,50  4 170,00\nLevert 18.09.2026, pakkseddel 5561\n\nÅ betale  4 170,00\nForfall 20.10.2026\nKontonummer 1503.12.34567",
+    "invoice_number": "20960",
+    "amount": "4170.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-20",
+    "due_date": "2026-10-20",
+    "bank_account": "1503.12.34567",
+    "vendor": {"name": "Nordlys Kontorservice AS", "org_number": "999 200 001", "bank_account_on_file": "1503.12.34567"},
+    "purchase_order": {
+      "number": "PO-2026-118",
+      "lines": [
+        {"description": "Kaffebønner, hele, 1 kg", "quantity": "20", "unit_price": "189.00"},
+        {"description": "Filterpapir 1x4, 100 stk", "quantity": "10", "unit_price": "39.00"}
+      ],
+      "total": "4170.00"
+    },
+    "earlier_invoices": [
+      {"invoice_number": "20877", "invoice_date": "2026-08-12", "amount": "3950.00", "text": "Faktura 20877\nKaffebønner, hele, 1 kg  20 x 189,00  3 780,00\nMelk, lang holdbarhet, 1 l  20 x 8,50  170,00\nLevert 11.08.2026, pakkseddel 5390\nÅ betale  3 950,00"}
+    ]
+  },
+  "text_en": "Nordlys Kontorservice AS\nCompany no. 999 200 001 VAT\nInvoice 20960, date 2026-09-20\nYour order: PO-2026-118\n\nDesk lamp LED, white  4 x 1,042.50  4,170.00\nDelivered 2026-09-18, packing slip 5561\n\nAmount due  4,170.00\nDue 2026-10-20\nAccount number 1503.12.34567",
+  "expected": {
+    "judgments": {"lines_describe_po": false, "bank_change_announced": false, "same_delivery_as_earlier": false},
+    "computed": {
+      "decision": "review",
+      "checks": {"amount_within_tolerance": true, "invoice_number_seen": false, "bank_account_matches": true, "same_amount_as_earlier": false}
+    }
+  }
+}

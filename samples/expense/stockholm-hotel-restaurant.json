@@ -1,0 +1,31 @@
+{
+  "name": "stockholm-hotel-restaurant",
+  "note": "Swedish hotel with dinner on the bill. Foreign vendor decides the code, so none of Jev's answers are read.",
+  "request": {
+    "invoice_text": "Hotell Kungsbron AB\nOrg.nr 556000-0001\nKvitto 7781, 15.09.2026\nGäst: Kari Nordmann\n\nRum, 1 natt  1 690,00 SEK\nRestaurang, middag  425,00 SEK\n\nSumma  2 115,00 SEK\nVarav moms 12 %  226,61 SEK",
+    "employee_country": "NO",
+    "vendor_country": "SE",
+    "expense_purpose": "Tjenestereise til Stockholm"
+  },
+  "text_en": "Hotell Kungsbron AB\nCompany no. 556000-0001\nReceipt 7781, 2026-09-15\nGuest: Kari Nordmann\n\nRoom, 1 night  1,690.00 SEK\nRestaurant, dinner  425.00 SEK\n\nTotal  2,115.00 SEK\nof which VAT 12 %  226.61 SEK",
+  "expected": {
+    "judgments": {
+      "accommodation": true,
+      "food": true,
+      "alcohol": false,
+      "passenger_transport": false,
+      "customer_entertainment": false,
+      "multiple_types": true,
+      "category": "accommodation"
+    },
+    "computed": {
+      "saft_code": "0",
+      "should_split": false,
+      "foreign_purchase": true,
+      "vat_rates_found": ["12"],
+      "category_check": "not_checked",
+      "needs_review": false,
+      "judgments_read": []
+    }
+  }
+}
