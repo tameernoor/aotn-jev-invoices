@@ -59,6 +59,7 @@ def test_sample_produces_expected_computed_values(path, tmp_path):
     response = client.post(f"/{kind}-invoices", json=sample["request"])
 
     assert response.status_code == 200, response.text
+    assert set(fake.calls[0]["questions"]) == set(sample["expected"]["judgments"])
     computed = response.json()["computed"]
     for key, want in sample["expected"]["computed"].items():
         assert computed[key] == want, f"{path.stem}: {key}"

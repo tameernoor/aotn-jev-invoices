@@ -24,7 +24,7 @@
     "judgments": {
       "line_specificity": 0,
       "po_items_billed": false,
-      "unordered_items": false,
+      "unordered_items": true,
       "bank_change_request": false,
       "payment_pressure": false,
       "document_kind": "invoice"

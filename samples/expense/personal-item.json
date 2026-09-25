@@ -20,7 +20,7 @@
       "purpose_fits_receipt": true,
       "personal_items": true,
       "receipt_kind": "itemised_receipt",
-      "purpose_detail": 2
+      "purpose_detail": 1
     },
     "computed": {
       "saft_code": "1",
