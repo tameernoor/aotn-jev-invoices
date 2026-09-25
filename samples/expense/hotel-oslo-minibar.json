@@ -2,12 +2,12 @@
   "name": "hotel-oslo-minibar",
   "note": "Hotel stay with one minibar beer. Two kinds of expense, so policy says split before coding.",
   "request": {
-    "invoice_text": "Hotell Fjordgløtt Oslo AS\nOrg.nr 999 100 001 MVA\nFaktura 44821, dato 03.09.2026\nGjest: Kari Nordmann\n\nOvernatting enkeltrom, 2 netter  2 x 1 450,00  2 900,00\nMinibar: Ringnes pils 0,33 l  1 x 89,00  89,00\n\nSum inkl. mva  2 989,00\nHerav mva 12 %  310,71\nHerav mva 25 %  17,80\nBetalt med kort",
+    "invoice_text": "Hotell Utsiktsporten Oslo AS\nOrg.nr 999 100 001 MVA\nFaktura 44821, dato 03.09.2026\nGjest: Kari Nordmann\n\nOvernatting enkeltrom, 2 netter  2 x 1 450,00  2 900,00\nMinibar: Pils 0,33 l  1 x 89,00  89,00\n\nSum inkl. mva  2 989,00\nHerav mva 12 %  310,71\nHerav mva 25 %  17,80\nBetalt med kort",
     "employee_country": "NO",
     "vendor_country": "NO",
     "expense_purpose": "Overnatting under kurs i Oslo"
   },
-  "text_en": "Hotell Fjordgløtt Oslo AS\nCompany no. 999 100 001 VAT\nInvoice 44821, date 2026-09-03\nGuest: Kari Nordmann\n\nSingle room, 2 nights  2 x 1,450.00  2,900.00\nMinibar: Ringnes lager 0.33 l  1 x 89.00  89.00\n\nTotal incl. VAT  2,989.00\nof which VAT 12 %  310.71\nof which VAT 25 %  17.80\nPaid by card",
+  "text_en": "Hotell Utsiktsporten Oslo AS\nCompany no. 999 100 001 VAT\nInvoice 44821, date 2026-09-03\nGuest: Kari Nordmann\n\nSingle room, 2 nights  2 x 1,450.00  2,900.00\nMinibar: Lager beer 0.33 l  1 x 89.00  89.00\n\nTotal incl. VAT  2,989.00\nof which VAT 12 %  310.71\nof which VAT 25 %  17.80\nPaid by card",
   "expected": {
     "judgments": {
       "accommodation": true,

@@ -40,7 +40,7 @@ multiple_types:
 
 category:
   type: choice
-  instructions: What is the main kind of expense on this invoice?
+  instructions: What is the main kind of expense on this invoice? Use `expense_purpose` together with `invoice_text`.
   criteria:
     accommodation: Hotel room or other lodging.
     food: Meals or food served, restaurant or cafe.

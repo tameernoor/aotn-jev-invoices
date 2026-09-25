@@ -2,14 +2,14 @@
   "name": "clean-invoice",
   "note": "Matches the PO, known account, nothing unusual.",
   "request": {
-    "invoice_text": "Nordlys Kontorservice AS\nOrg.nr 999 200 001 MVA\nFaktura 20931, dato 12.09.2026\nDeres bestilling: PO-2026-118\n\nKaffebønner, hele, 1 kg  20 x 189,00  3 780,00\nFilterpapir 1x4, 100 stk  10 x 39,00  390,00\nLevert 11.09.2026, pakkseddel 5512\n\nÅ betale  4 170,00\nForfall 12.10.2026\nKontonummer 1503.12.34567",
+    "invoice_text": "Nordlys Kontorservice AS\nOrg.nr 999 200 002 MVA\nFaktura 20931, dato 12.09.2026\nDeres bestilling: PO-2026-118\n\nKaffebønner, hele, 1 kg  20 x 189,00  3 780,00\nFilterpapir 1x4, 100 stk  10 x 39,00  390,00\nLevert 11.09.2026, pakkseddel 5512\n\nÅ betale  4 170,00\nHerav mva 25 %  834,00\nForfall 12.10.2026\nKontonummer 1503.12.34567",
     "invoice_number": "20931",
     "amount": "4170.00",
     "currency": "NOK",
     "invoice_date": "2026-09-12",
     "due_date": "2026-10-12",
     "bank_account": "1503.12.34567",
-    "vendor": {"name": "Nordlys Kontorservice AS", "org_number": "999 200 001", "bank_account_on_file": "1503.12.34567"},
+    "vendor": {"name": "Nordlys Kontorservice AS", "org_number": "999 200 002", "bank_account_on_file": "1503.12.34567"},
     "purchase_order": {
       "number": "PO-2026-118",
       "lines": [
@@ -19,10 +19,10 @@
       "total": "4170.00"
     },
     "earlier_invoices": [
-      {"invoice_number": "20877", "invoice_date": "2026-08-12", "amount": "3950.00", "text": "Faktura 20877\nKaffebønner, hele, 1 kg  20 x 189,00  3 780,00\nMelk, lang holdbarhet, 1 l  20 x 8,50  170,00\nLevert 11.08.2026, pakkseddel 5390\nÅ betale  3 950,00"}
+      {"invoice_number": "20877", "invoice_date": "2026-08-12", "amount": "3950.00", "text": "Faktura 20877\nKaffebønner, hele, 1 kg  20 x 189,00  3 780,00\nMelk, lang holdbarhet, 1 l  20 x 8,50  170,00\nLevert 11.08.2026, pakkseddel 5390\nÅ betale  3 950,00\nHerav mva 25 %  790,00"}
     ]
   },
-  "text_en": "Nordlys Kontorservice AS\nCompany no. 999 200 001 VAT\nInvoice 20931, date 2026-09-12\nYour order: PO-2026-118\n\nCoffee beans, whole, 1 kg  20 x 189.00  3,780.00\nFilter paper 1x4, 100 pcs  10 x 39.00  390.00\nDelivered 2026-09-11, packing slip 5512\n\nAmount due  4,170.00\nDue 2026-10-12\nAccount number 1503.12.34567",
+  "text_en": "Nordlys Kontorservice AS\nCompany no. 999 200 002 VAT\nInvoice 20931, date 2026-09-12\nYour order: PO-2026-118\n\nCoffee beans, whole, 1 kg  20 x 189.00  3,780.00\nFilter paper 1x4, 100 pcs  10 x 39.00  390.00\nDelivered 2026-09-11, packing slip 5512\n\nAmount due  4,170.00\nof which VAT 25 %  834.00\nDue 2026-10-12\nAccount number 1503.12.34567",
   "expected": {
     "judgments": {"lines_describe_po": true, "bank_change_announced": false, "same_delivery_as_earlier": false},
     "computed": {

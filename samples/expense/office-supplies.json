@@ -2,12 +2,12 @@
   "name": "office-supplies",
   "note": "Chargers and a notebook. Nothing special, regular rate.",
   "request": {
-    "invoice_text": "Kontorhuset AS\nOrg.nr 999 100 006 MVA\nKvittering 30019, 11.09.2026\n\n2 x USB-C-lader 65 W  299,00  598,00\n1 x Notatbok A5  89,00\n\nSum  687,00\nHerav mva 25 %  137,40",
+    "invoice_text": "Kontorlageret AS\nOrg.nr 999 100 006 MVA\nKvittering 30019, 11.09.2026\n\n2 x USB-C-lader 65 W  299,00  598,00\n1 x Notatbok A5  89,00\n\nSum  687,00\nHerav mva 25 %  137,40",
     "employee_country": "NO",
     "vendor_country": "NO",
     "expense_purpose": "Utstyr til hjemmekontor"
   },
-  "text_en": "Kontorhuset AS\nCompany no. 999 100 006 VAT\nReceipt 30019, 2026-09-11\n\n2 x USB-C charger 65 W  299.00  598.00\n1 x Notebook A5  89.00\n\nTotal  687.00\nof which VAT 25 %  137.40",
+  "text_en": "Kontorlageret AS\nCompany no. 999 100 006 VAT\nReceipt 30019, 2026-09-11\n\n2 x USB-C charger 65 W  299.00  598.00\n1 x Notebook A5  89.00\n\nTotal  687.00\nof which VAT 25 %  137.40",
   "expected": {
     "judgments": {
       "accommodation": false,
