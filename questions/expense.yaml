@@ -6,13 +6,16 @@
 
 lodging_charged:
   type: noul
-  instructions: Does `invoice_text` charge for a room or other overnight stay?
+  instructions: Does `invoice_text` charge for at least one night of accommodation, such as a hotel room?
+  criteria:
+    "true": At least one line charges for a night of accommodation.
+    "false": No night of accommodation is charged. Meeting or conference rooms and room deposits count as no.
 
 served_food_charged:
   type: noul
   instructions: Does `invoice_text` charge for food served to eat on the spot, such as a restaurant meal, room service or a breakfast on its own line?
   criteria:
-    "true": At least one line is food served at a restaurant, cafe, hotel or similar.
+    "true": At least one line is food served at a restaurant, cafe, hotel or similar, including snacks from a minibar.
     "false": No served food is charged. Groceries to take away and breakfast included in the room price without its own line count as no.
 
 alcohol_charged:
@@ -31,7 +34,7 @@ transport_charged:
 
 goods_charged:
   type: noul
-  instructions: Does `invoice_text` charge for goods to take away, such as equipment, office supplies or toiletries?
+  instructions: Does `invoice_text` charge for goods to take away, such as equipment, office supplies or groceries?
   criteria:
     "true": At least one line is an item the buyer takes away.
     "false": No such item is charged. Food and drinks consumed on the spot, including the minibar, count as no.
@@ -45,27 +48,34 @@ hosted_guests:
     "true": The expense includes hosting people from outside the company, for example a meal or event with customers or suppliers.
     "false": Only the employee or colleagues used what was paid for, even if the trip was to meet someone outside the company.
 
+guests_named:
+  type: noul
+  instructions: Does `expense_purpose` name the guests from outside the company, or the company they came from?
+  criteria:
+    "true": At least one guest's name or the guests' company is written in `expense_purpose`.
+    "false": '`expense_purpose` names no guest and no company, for example "customer dinner".'
+
 purpose_fits_receipt:
   type: noul
-  instructions: Do the main items charged in `invoice_text` fit the purpose given in `expense_purpose`?
+  instructions: Does what `invoice_text` charges for fit the purpose given in `expense_purpose`?
   criteria:
-    "true": What was mainly bought is what the purpose describes.
-    "false": What was mainly bought is something the purpose does not describe.
+    "true": The purpose describes what was bought, or the purpose does not say what was bought.
+    "false": The purpose describes something clearly different from what was bought, for example a train ticket when the receipt is for a restaurant.
 
 personal_items:
   type: noul
-  instructions: Does `invoice_text` charge for at least one item for private use, such as clothing, cosmetics, perfume, toiletries, films or gifts for family?
+  instructions: Does `invoice_text` charge for at least one item for private use?
   criteria:
-    "true": At least one line is an item most employers would treat as private.
-    "false": Every line is something a business would normally pay for.
+    "true": At least one line is clothing, shoes, cosmetics, perfume, toiletries, jewellery, toys, or films or other entertainment for the traveller.
+    "false": Every line is for the work or the trip, such as meals, lodging, transport, office supplies or work equipment.
 
 receipt_kind:
   type: choice
-  instructions: What kind of document is `invoice_text`?
+  instructions: What kind of document is `invoice_text`? If it shows an invoice number, answer invoice. If it is a travel ticket, answer ticket.
   criteria:
-    itemised_receipt: A receipt that lists what was bought, line by line, with prices.
-    ticket: A travel ticket that shows the journey and the price paid.
-    invoice: An invoice from the seller, with an invoice number and what was charged.
+    invoice: A document with an invoice number from the seller.
+    ticket: A travel ticket that shows the journey and the price paid, without an invoice number.
+    itemised_receipt: A receipt without an invoice number that lists what was bought, line by line, with prices.
     card_slip: A payment terminal slip that shows only the card payment and the total, not what was bought.
     booking_confirmation: A confirmation of a booking or order, not proof of payment.
     other: Any other document.
@@ -74,6 +84,6 @@ purpose_detail:
   type: score
   instructions: How specific is `expense_purpose` about the work this expense was for?
   criteria:
-    - Missing or generic, such as "meeting", "work" or "travel", without saying what the work was.
-    - Says what the work was, such as a named course, meeting, fair or trip, but not who took part.
-    - Says what the work was and names who took part, for example the guests' names or their company.
+    - Missing or generic, such as "meeting", "work" or "travel".
+    - Names the kind of work, such as a meeting, course, fair, customer dinner or trip home.
+    - Names the specific event, project, place or people, such as "contract law course in Oslo" or "dinner with Hansen from Acme AS".

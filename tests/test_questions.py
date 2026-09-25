@@ -18,6 +18,7 @@ EXPENSE_IDS = [
     "transport_charged",
     "goods_charged",
     "hosted_guests",
+    "guests_named",
     "purpose_fits_receipt",
     "personal_items",
     "receipt_kind",
@@ -25,12 +26,12 @@ EXPENSE_IDS = [
 ]
 
 VENDOR_IDS = [
+    "line_specificity",
     "po_items_billed",
     "unordered_items",
     "bank_change_request",
     "payment_pressure",
     "document_kind",
-    "line_specificity",
 ]
 
 
@@ -40,7 +41,7 @@ def test_expense_questions_load_in_file_order():
     assert questions["receipt_kind"]["type"] == "choice"
     assert "other" in questions["receipt_kind"]["criteria"]
     assert questions["alcohol_charged"]["criteria"]["true"].startswith("At least one line")
-    assert "criteria" not in questions["lodging_charged"]
+    assert set(questions["lodging_charged"]["criteria"]) == {"true", "false"}
     assert questions["purpose_detail"]["type"] == "score"
     assert len(questions["purpose_detail"]["criteria"]) == 3
 
@@ -128,6 +129,18 @@ def test_duplicate_questions_one_per_earlier_invoice():
         {"invoice_number": "20931", "text": "b"},
     ]
     assert list(duplicate_questions(earlier)) == ["same_as_20877", "same_as_20931"]
+
+
+def test_duplicate_questions_do_not_share_the_same_criteria_object():
+    earlier = [
+        {"invoice_number": "20877", "text": "a"},
+        {"invoice_number": "20931", "text": "b"},
+    ]
+    questions = duplicate_questions(earlier)
+    first = questions["same_as_20877"]["criteria"]
+    second = questions["same_as_20931"]["criteria"]
+    assert first == second
+    assert first is not second
 
 
 def test_vendor_request_questions_with_no_earlier_invoices_equals_the_base():

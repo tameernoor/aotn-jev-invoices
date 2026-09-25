@@ -64,8 +64,8 @@ DUPLICATE_QUESTION = (
     "or the same period, as `earlier_invoice`?"
 )
 DUPLICATE_CRITERIA = {
-    "true": "The same items from the same delivery or period appear on `earlier_invoice`.",
-    "false": "The items are different, or they are the same kind of items from a different delivery or period.",
+    "true": "The same items from the same delivery or period appear on `earlier_invoice`, for example the same delivery date or the same delivery note.",
+    "false": "The items are different, or they come from a different delivery or period. If neither text names a delivery date, delivery note or period, answer no.",
 }
 
 
@@ -82,7 +82,7 @@ def duplicate_questions(earlier_invoices: list[dict]) -> dict[str, dict]:
                 "earlier_invoice": {"invoice_number": e["invoice_number"], "text": e["text"]},
                 "question": DUPLICATE_QUESTION,
             },
-            "criteria": DUPLICATE_CRITERIA,
+            "criteria": dict(DUPLICATE_CRITERIA),
         }
         for e in earlier_invoices
     }

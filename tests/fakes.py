@@ -39,7 +39,7 @@ class FakeJev:
                 judgments[qid] = {"type": "noul", "value": 0.05 if value is None else float(value)}
             elif question["type"] == "choice":
                 options = question["criteria"]
-                picked = value if value is not None else ("other" if "other" in options else next(iter(options)))
+                picked = value if value is not None else next(iter(options))
                 judgments[qid] = {"type": "choice", "value": picked, "probabilities": {picked: 1.0}, "confidence": 1.0}
             else:
                 # Default to the top level so unrelated tests don't trip a purpose/detail check
