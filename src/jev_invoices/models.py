@@ -62,16 +62,17 @@ class VendorInvoiceIn(BaseModel):
     extra_questions: dict[str, Question] | None = None
 
     def state(self) -> dict:
-        """What Jev sees: descriptions only. Amounts, dates and accounts stay with the code."""
+        """What Jev sees: descriptions only. Amounts, dates and accounts stay with the code.
+
+        Earlier invoices travel inside the generated duplicate questions instead (see
+        questions.duplicate_questions), not in the shared state.
+        """
         return {
             "invoice_text": self.invoice_text,
             "purchase_order": {
                 "number": self.purchase_order.number,
                 "lines": [{"description": line.description} for line in self.purchase_order.lines],
             },
-            "earlier_invoices": [
-                e.model_dump(mode="json", include={"invoice_number", "text"}) for e in self.earlier_invoices
-            ],
         }
 
 
@@ -99,6 +100,7 @@ class ExpenseComputed(BaseModel):
 class VendorComputed(BaseModel):
     decision: Literal["approve", "hold", "review"]
     checks: dict[str, bool]
+    duplicate_candidates: list[str]
     judgments_read: list[str]
     uncertain: list[str]
     reasons: list[str]

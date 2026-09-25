@@ -80,12 +80,11 @@ def test_country_codes_must_be_two_letters():
 
 def test_vendor_state_holds_descriptions_not_amounts_or_accounts():
     state = VendorInvoiceIn.model_validate(VENDOR_BODY).state()
-    assert set(state) == {"invoice_text", "purchase_order", "earlier_invoices"}
+    assert set(state) == {"invoice_text", "purchase_order"}
     assert state["purchase_order"] == {
         "number": "PO-2026-118",
         "lines": [{"description": "Kaffebønner, hele, 1 kg"}],
     }
-    assert state["earlier_invoices"] == [{"invoice_number": "20877", "text": "Faktura 20877"}]
     json.dumps(state)  # must be JSON-serialisable for the SDK
 
 

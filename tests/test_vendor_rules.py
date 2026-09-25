@@ -1,9 +1,10 @@
 from datetime import date
 from decimal import Decimal
 
-from fakes import answers
+from fakes import answers, level
 
-from jev_invoices.rules.vendor import decide_vendor, exact_checks
+from jev_invoices.questions import duplicate_question_id
+from jev_invoices.rules.vendor import decide_vendor, exact_checks, recent_invoices
 
 EARLIER = [{"invoice_number": "20877", "invoice_date": date(2026, 8, 12), "amount": Decimal("3950.00")}]
 
@@ -12,7 +13,6 @@ def checks(**overrides):
     args = dict(
         invoice_number="20931",
         amount=Decimal("4170.00"),
-        invoice_date=date(2026, 9, 12),
         bank_account="1503.12.34567",
         bank_account_on_file="1503.12.34567",
         po_total=Decimal("4170.00"),
@@ -21,11 +21,27 @@ def checks(**overrides):
     return exact_checks(**{**args, **overrides})
 
 
-CLEAN = dict(amount_within_tolerance=True, invoice_number_seen=False, bank_account_matches=True, same_amount_as_earlier=False)
+CLEAN = dict(amount_within_tolerance=True, invoice_number_seen=False, bank_account_matches=True)
+
+
+def dup(number: str, value) -> dict:
+    """A judgment override for the generated duplicate question of one earlier invoice."""
+    return {duplicate_question_id(number): value}
 
 
 def judged(**overrides):
-    return answers(**{**dict(lines_describe_po=0.95, bank_change_announced=0.05, same_delivery_as_earlier=0.05), **overrides})
+    base = dict(
+        line_specificity=level(2),
+        po_items_billed=0.95,
+        unordered_items=0.05,
+        bank_change_request=0.05,
+        payment_pressure=0.05,
+        document_kind="invoice",
+    )
+    return answers(**{**base, **overrides})
+
+
+# --- exact_checks -----------------------------------------------------------
 
 
 def test_clean_invoice_passes_every_check():
@@ -55,59 +71,127 @@ def test_reused_invoice_number_is_seen():
     assert checks(invoice_number="20877")["invoice_number_seen"] is True
 
 
-def test_same_amount_counts_only_within_sixty_days():
-    earlier = [{"invoice_number": "1", "invoice_date": date(2026, 7, 14), "amount": Decimal("4170")}]
-    assert checks(earlier_invoices=earlier)["same_amount_as_earlier"] is True
-    earlier[0]["invoice_date"] = date(2026, 7, 13)
-    assert checks(earlier_invoices=earlier)["same_amount_as_earlier"] is False
-
-
 def test_no_earlier_invoices():
-    result = checks(earlier_invoices=[])
-    assert result["invoice_number_seen"] is False
-    assert result["same_amount_as_earlier"] is False
+    assert checks(earlier_invoices=[])["invoice_number_seen"] is False
 
 
-def test_clean_invoice_is_approved_without_reading_the_duplicate_question():
-    result = decide_vendor(judged(), CLEAN)
-    assert result["decision"] == "approve"
-    assert "same_delivery_as_earlier" not in result["judgments_read"]
+# --- recent_invoices ----------------------------------------------------------
 
 
-def test_bank_mismatch_holds_without_asking_jev_anything():
-    result = decide_vendor(judged(), {**CLEAN, "bank_account_matches": False})
+def test_recent_invoices_includes_the_sixtieth_day():
+    earlier = [{"invoice_number": "1", "invoice_date": date(2026, 7, 14)}]
+    assert recent_invoices(date(2026, 9, 12), earlier) == ["1"]
+
+
+def test_recent_invoices_excludes_the_sixty_first_day():
+    earlier = [{"invoice_number": "1", "invoice_date": date(2026, 7, 13)}]
+    assert recent_invoices(date(2026, 9, 12), earlier) == []
+
+
+# --- decide_vendor: hold -----------------------------------------------------
+
+
+def test_bank_mismatch_holds_reading_nothing():
+    result = decide_vendor(judged(), {**CLEAN, "bank_account_matches": False}, [])
     assert result["decision"] == "hold"
     assert result["judgments_read"] == []
+    assert result["reasons"] == ["The bank account differs from the vendor record."]
 
 
-def test_bank_change_announced_in_text_holds():
-    result = decide_vendor(judged(bank_change_announced=0.95), CLEAN)
+def test_bank_change_request_holds():
+    result = decide_vendor(judged(bank_change_request=0.95), CLEAN, [])
     assert result["decision"] == "hold"
+
+
+def test_payment_pressure_holds():
+    result = decide_vendor(judged(payment_pressure=0.95), CLEAN, [])
+    assert result["decision"] == "hold"
+
+
+# --- decide_vendor: review ----------------------------------------------------
+
+
+def test_reminder_document_goes_to_review():
+    result = decide_vendor(judged(document_kind="reminder"), CLEAN, [])
+    assert result["decision"] == "review"
+    assert result["reasons"] == ["This is not an invoice but a reminder."]
+
+
+def test_credit_note_document_goes_to_review():
+    result = decide_vendor(judged(document_kind="credit_note"), CLEAN, [])
+    assert result["decision"] == "review"
+    assert result["reasons"] == ["This is not an invoice but a credit note."]
 
 
 def test_reused_invoice_number_goes_to_review():
-    assert decide_vendor(judged(), {**CLEAN, "invoice_number_seen": True})["decision"] == "review"
-
-
-def test_same_amount_and_same_delivery_goes_to_review():
-    result = decide_vendor(judged(same_delivery_as_earlier=0.95), {**CLEAN, "same_amount_as_earlier": True})
+    result = decide_vendor(judged(), {**CLEAN, "invoice_number_seen": True}, [])
     assert result["decision"] == "review"
 
 
-def test_same_amount_but_different_delivery_is_approved():
-    result = decide_vendor(judged(), {**CLEAN, "same_amount_as_earlier": True})
+def test_in_window_duplicate_goes_to_review_naming_the_earlier_invoice():
+    result = decide_vendor(judged(**dup("20877", 0.95)), CLEAN, ["20877"])
+    assert result["decision"] == "review"
+    assert result["reasons"] == ["Charges for the same delivery as earlier invoice 20877."]
+    assert result["duplicate_candidates"] == ["20877"]
+
+
+def test_out_of_window_duplicate_is_not_read_and_invoice_approves():
+    # The judgment says yes, but 20877 is not in `recent` (out of the resend window).
+    result = decide_vendor(judged(**dup("20877", 0.95)), CLEAN, [])
     assert result["decision"] == "approve"
+    assert "same_as_20877" not in result["judgments_read"]
+    assert result["duplicate_candidates"] == []
 
 
 def test_amount_outside_tolerance_goes_to_review():
-    assert decide_vendor(judged(), {**CLEAN, "amount_within_tolerance": False})["decision"] == "review"
-
-
-def test_lines_that_do_not_describe_the_po_go_to_review():
-    assert decide_vendor(judged(lines_describe_po=0.05), CLEAN)["decision"] == "review"
-
-
-def test_uncertain_answer_goes_to_review():
-    result = decide_vendor(judged(lines_describe_po=0.5), CLEAN)
+    result = decide_vendor(judged(), {**CLEAN, "amount_within_tolerance": False}, [])
     assert result["decision"] == "review"
-    assert result["uncertain"] == ["lines_describe_po"]
+
+
+def test_specificity_level_zero_goes_to_review_without_reading_po_questions():
+    result = decide_vendor(judged(line_specificity=level(0)), CLEAN, [])
+    assert result["decision"] == "review"
+    assert result["reasons"] == ["The invoice lines are too general to check against the purchase order."]
+    assert "po_items_billed" not in result["judgments_read"]
+    assert "unordered_items" not in result["judgments_read"]
+
+
+def test_po_items_not_billed_goes_to_review():
+    result = decide_vendor(judged(po_items_billed=0.05), CLEAN, [])
+    assert result["decision"] == "review"
+
+
+def test_unordered_items_goes_to_review():
+    result = decide_vendor(judged(unordered_items=0.95), CLEAN, [])
+    assert result["decision"] == "review"
+
+
+def test_uncertain_in_window_duplicate_goes_to_review():
+    result = decide_vendor(judged(**dup("20877", 0.5)), CLEAN, ["20877"])
+    assert result["decision"] == "review"
+    assert result["uncertain"] == ["same_as_20877"]
+    assert "same_as_20877" in result["judgments_read"]
+    assert result["reasons"][-1] == "Uncertain answer for: same_as_20877."
+
+
+def test_out_of_window_uncertain_duplicate_is_not_read_and_invoice_approves():
+    result = decide_vendor(judged(**dup("20877", 0.5)), CLEAN, [])
+    assert result["decision"] == "approve"
+    assert result["uncertain"] == []
+    assert "same_as_20877" not in result["judgments_read"]
+
+
+# --- decide_vendor: approve ---------------------------------------------------
+
+
+def test_clean_invoice_is_approved():
+    result = decide_vendor(judged(), CLEAN, [])
+    assert result["decision"] == "approve"
+    assert result["reasons"] == ["All checks passed."]
+    assert result["uncertain"] == []
+
+
+def test_duplicate_candidates_reports_the_recent_list_regardless_of_decision():
+    result = decide_vendor(judged(**dup("20877", 0.05)), CLEAN, ["20877"])
+    assert result["decision"] == "approve"
+    assert result["duplicate_candidates"] == ["20877"]
