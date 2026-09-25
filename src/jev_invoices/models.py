@@ -62,13 +62,15 @@ class VendorInvoiceIn(BaseModel):
     extra_questions: dict[str, Question] | None = None
 
     def state(self) -> dict:
-        """What Jev sees: descriptions only. Amounts and accounts stay with the code."""
+        """What Jev sees: descriptions only. Amounts, dates and accounts stay with the code."""
         return {
             "invoice_text": self.invoice_text,
-            "purchase_order": self.purchase_order.model_dump(mode="json"),
+            "purchase_order": {
+                "number": self.purchase_order.number,
+                "lines": [{"description": line.description} for line in self.purchase_order.lines],
+            },
             "earlier_invoices": [
-                e.model_dump(mode="json", include={"invoice_number", "invoice_date", "text"})
-                for e in self.earlier_invoices
+                e.model_dump(mode="json", include={"invoice_number", "text"}) for e in self.earlier_invoices
             ],
         }
 
