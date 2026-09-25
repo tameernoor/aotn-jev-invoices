@@ -3,11 +3,19 @@
 from jev_invoices.jev import JevResult
 
 
+def level(n: int) -> dict:
+    """A score judgment at level n, for building fixed answers with answers(qid=level(n))."""
+    return {"type": "score", "value": float(n), "probabilities": {str(n): 1.0}, "confidence": 1.0, "legend": {}}
+
+
 def answers(**values) -> dict:
-    """Judgments in the shape jev.py returns. A float is a noul, a str is a choice."""
+    """Judgments in the shape jev.py returns. A float is a noul, a str is a choice (confidence 1.0),
+    a dict (such as one built by level()) passes through unchanged."""
     out = {}
     for qid, value in values.items():
-        if isinstance(value, str):
+        if isinstance(value, dict):
+            out[qid] = value
+        elif isinstance(value, str):
             out[qid] = {"type": "choice", "value": value, "probabilities": {value: 1.0}, "confidence": 1.0}
         else:
             out[qid] = {"type": "noul", "value": float(value)}
@@ -34,12 +42,16 @@ class FakeJev:
                 picked = value if value is not None else ("other" if "other" in options else next(iter(options)))
                 judgments[qid] = {"type": "choice", "value": picked, "probabilities": {picked: 1.0}, "confidence": 1.0}
             else:
+                # Default to the top level so unrelated tests don't trip a purpose/detail check
+                # by accident; an explicit value in `values` always wins.
+                top_level = float(len(question["criteria"]) - 1)
+                picked_level = top_level if value is None else float(value)
                 judgments[qid] = {
                     "type": "score",
-                    "value": 0.0 if value is None else float(value),
-                    "probabilities": {"0": 1.0},
+                    "value": picked_level,
+                    "probabilities": {str(int(picked_level)): 1.0},
                     "confidence": 1.0,
-                    "legend": {str(i): str(level) for i, level in enumerate(question["criteria"])},
+                    "legend": {str(i): str(lvl) for i, lvl in enumerate(question["criteria"])},
                 }
         meta = {
             "model": "fake-jev",

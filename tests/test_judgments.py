@@ -1,4 +1,4 @@
-from fakes import answers
+from fakes import answers, level
 
 from jev_invoices.rules.judgments import Judgments
 
@@ -36,3 +36,32 @@ def test_choice_is_read():
     j = Judgments(answers(category="food"))
     assert j.choice("category") == "food"
     assert j.read == ["category"]
+
+
+def test_low_confidence_choice_is_uncertain():
+    j = Judgments(
+        answers(
+            document_kind={
+                "type": "choice",
+                "value": "invoice",
+                "probabilities": {"invoice": 0.5, "reminder": 0.5},
+                "confidence": 0.5,
+            }
+        )
+    )
+    assert j.choice("document_kind") == "invoice"
+    assert j.uncertain == ["document_kind"]
+    assert j.read == ["document_kind"]
+
+
+def test_high_confidence_choice_is_not_uncertain():
+    j = Judgments(answers(category="food"))
+    assert j.choice("category") == "food"
+    assert j.uncertain == []
+
+
+def test_score_is_read_and_not_marked_uncertain():
+    j = Judgments(answers(purpose_detail=level(2)))
+    assert j.score("purpose_detail") == 2.0
+    assert j.read == ["purpose_detail"]
+    assert j.uncertain == []

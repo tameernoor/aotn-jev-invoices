@@ -6,6 +6,7 @@ that turn out not to matter for this invoice are ignored, even when uncertain.
 
 YES = 0.8  # thresholds from TypeSafe's Noul page
 NO = 0.2
+CHOICE_MIN_CONFIDENCE = 0.6  # a choice read with less confidence than this is uncertain
 
 
 class Judgments:
@@ -33,7 +34,14 @@ class Judgments:
 
     def choice(self, qid: str) -> str:
         self._mark_read(qid)
-        return self._raw[qid]["value"]
+        answer = self._raw[qid]
+        if answer.get("confidence", 1.0) < CHOICE_MIN_CONFIDENCE and qid not in self.uncertain:
+            self.uncertain.append(qid)
+        return answer["value"]
+
+    def score(self, qid: str) -> float:
+        self._mark_read(qid)
+        return float(self._raw[qid]["value"])
 
     def __getattr__(self, name: str) -> bool:
         if name.startswith("_"):

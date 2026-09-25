@@ -1,5 +1,6 @@
 """Question sets. The YAML files define the classifiers; requests can add more."""
 
+import re
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -38,7 +39,10 @@ class QuestionCollision(ValueError):
 
 
 def _as_dicts(questions: dict) -> dict[str, dict]:
-    return {qid: question.model_dump(exclude_none=True) for qid, question in questions.items()}
+    return {
+        qid: question.model_dump(exclude_none=True) if hasattr(question, "model_dump") else question
+        for qid, question in questions.items()
+    }
 
 
 def load_questions(kind: str, directory: Path = QUESTIONS_DIR) -> dict[str, dict]:
@@ -53,3 +57,36 @@ def merge_questions(base: dict[str, dict], extra: dict | None) -> dict[str, dict
     if clash:
         raise QuestionCollision(f"extra_questions reuse built-in ids: {', '.join(clash)}")
     return {**base, **_as_dicts(extra)}
+
+
+DUPLICATE_QUESTION = (
+    "Does `invoice_text` charge for the same goods or services, from the same delivery "
+    "or the same period, as `earlier_invoice`?"
+)
+DUPLICATE_CRITERIA = {
+    "true": "The same items from the same delivery or period appear on `earlier_invoice`.",
+    "false": "The items are different, or they are the same kind of items from a different delivery or period.",
+}
+
+
+def duplicate_question_id(invoice_number: str) -> str:
+    return "same_as_" + re.sub(r"[^0-9A-Za-z]+", "_", invoice_number).strip("_")
+
+
+def duplicate_questions(earlier_invoices: list[dict]) -> dict[str, dict]:
+    """One yes/no question per earlier invoice, built at request time from data."""
+    return {
+        duplicate_question_id(e["invoice_number"]): {
+            "type": "noul",
+            "instructions": {
+                "earlier_invoice": {"invoice_number": e["invoice_number"], "text": e["text"]},
+                "question": DUPLICATE_QUESTION,
+            },
+            "criteria": DUPLICATE_CRITERIA,
+        }
+        for e in earlier_invoices
+    }
+
+
+def vendor_request_questions(base: dict[str, dict], earlier_invoices: list[dict]) -> dict[str, dict]:
+    return merge_questions(base, duplicate_questions(earlier_invoices))
