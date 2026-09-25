@@ -14,15 +14,6 @@ NO_VAT_TREATMENT = "0"  # Ingen merverdiavgiftsbehandling (anskaffelser)
 DEDUCTIBLE_REGULAR_RATE = "1"  # Fradragsberettiget innenlands inngående mva, regular rate
 DEDUCTIBLE_LOW_RATE = "13"  # Fradragsberettiget innenlands inngående mva, reduced rate, low
 
-# The yes/no question that should agree with each main category.
-CATEGORY_TO_JUDGMENT = {
-    "accommodation": "accommodation",
-    "food": "food",
-    "alcohol": "alcohol",
-    "passenger_transport": "passenger_transport",
-    "entertainment": "customer_entertainment",
-}
-
 _VAT_WORD = re.compile(r"\b(mva|moms|vat)\b", re.IGNORECASE)
 _PERCENT = re.compile(r"(\d{1,2}(?:[.,]\d{1,2})?)\s?%")
 
@@ -36,53 +27,74 @@ def vat_rates_found(text: str) -> list[str]:
     return sorted(rates, key=float)
 
 
+ACCEPTED_DOCUMENTS = {"itemised_receipt", "ticket", "invoice"}
+GENERIC_PURPOSE_BELOW = 0.5  # purpose_detail level 0
+
+
 def apply_tax_rules(judgments: dict, *, invoice_text: str, employee_country: str, vendor_country: str) -> dict:
     j = Judgments(judgments)
     reasons: list[str] = []
+    flags: list[str] = []
     foreign_purchase = employee_country.upper() != vendor_country.upper()
+    kinds: list[str] = []
     should_split = False
     saft_code = None
 
+    guests = j.hosted_guests
     if foreign_purchase:
         saft_code = NO_VAT_TREATMENT
         reasons.append("Foreign vendor: foreign VAT is not Norwegian input VAT, no deduction.")
-    elif j.multiple_types:
-        should_split = True
-        reasons.append("Several kinds of expense on one invoice: split it into lines before coding.")
-    elif j.customer_entertainment:
-        saft_code = NO_VAT_TREATMENT
-        reasons.append("Customer entertainment (representasjon): no deduction, § 8-3 (1) e.")
-    elif j.food or j.alcohol:
-        saft_code = NO_VAT_TREATMENT
-        reasons.append("Food or drinks served (servering): no deduction, § 8-3 (1) a.")
-    elif j.accommodation or j.passenger_transport:
-        saft_code = DEDUCTIBLE_LOW_RATE
-        reasons.append("Accommodation or passenger transport: deductible at the low rate (12 %).")
     else:
-        saft_code = DEDUCTIBLE_REGULAR_RATE
-        reasons.append("Other purchase: deductible at the regular rate (25 %).")
+        if j.lodging_charged:
+            kinds.append("lodging")
+        if j.served_food_charged or j.alcohol_charged:
+            kinds.append("food_and_drink")
+        if j.transport_charged:
+            kinds.append("transport")
+        if j.goods_charged:
+            kinds.append("goods")
 
-    category_check = "not_checked"
-    if saft_code is not None and not foreign_purchase:
-        category = j.choice("category")
-        if category == "other":
-            agrees = saft_code == DEDUCTIBLE_REGULAR_RATE
+        if len(kinds) > 1:
+            should_split = True
+            reasons.append("Several kinds of expense on one invoice: split it into lines before coding.")
+        elif not kinds:
+            flags.append("Could not tell what was bought, so no VAT code was chosen.")
+        elif kinds == ["food_and_drink"]:
+            saft_code = NO_VAT_TREATMENT
+            if guests:
+                reasons.append("Customer entertainment (representasjon): no deduction, § 8-3 (1) e.")
+            else:
+                reasons.append("Food or drinks served (servering): no deduction, § 8-3 (1) a.")
+        elif kinds[0] in ("lodging", "transport"):
+            saft_code = DEDUCTIBLE_LOW_RATE
+            reasons.append("Accommodation or passenger transport: deductible at the low rate (12 %).")
         else:
-            agrees = not j.no(CATEGORY_TO_JUDGMENT[category])
-        category_check = "agrees" if agrees else "disagrees"
-        if not agrees:
-            reasons.append(f"Main category '{category}' disagrees with the yes/no answers.")
+            saft_code = DEDUCTIBLE_REGULAR_RATE
+            reasons.append("Goods: deductible at the regular rate (25 %).")
+
+    document = j.choice("receipt_kind")
+    if document not in ACCEPTED_DOCUMENTS:
+        flags.append(f"Not valid documentation: {document.replace('_', ' ')}.")
+    if j.no("purpose_fits_receipt"):
+        flags.append("What was bought does not fit the stated purpose.")
+    if j.personal_items:
+        flags.append("The receipt includes at least one item for private use.")
+    if guests and not j.guests_named:
+        flags.append("Customer entertainment must name the guests or their company.")
+    if j.score("purpose_detail") < GENERIC_PURPOSE_BELOW:
+        flags.append("The purpose is missing or too generic.")
 
     if j.uncertain:
-        reasons.append(f"Uncertain answer for: {', '.join(j.uncertain)}.")
+        flags.append(f"Uncertain answer for: {', '.join(j.uncertain)}.")
 
     return {
         "saft_code": saft_code,
-        "category_check": category_check,
         "should_split": should_split,
         "foreign_purchase": foreign_purchase,
+        "kinds": kinds,
         "vat_rates_found": vat_rates_found(invoice_text),
-        "needs_review": bool(j.uncertain) or category_check == "disagrees",
+        "needs_review": bool(flags),
+        "flags": flags,
         "judgments_read": list(j.read),
         "uncertain": list(j.uncertain),
         "reasons": reasons,

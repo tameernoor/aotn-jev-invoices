@@ -85,11 +85,12 @@ class Judgment(BaseModel):
 
 class ExpenseComputed(BaseModel):
     saft_code: str | None
-    category_check: Literal["agrees", "disagrees", "not_checked"]
     should_split: bool
     foreign_purchase: bool
+    kinds: list[str]
     vat_rates_found: list[str]
     needs_review: bool
+    flags: list[str]
     judgments_read: list[str]
     uncertain: list[str]
     reasons: list[str]
