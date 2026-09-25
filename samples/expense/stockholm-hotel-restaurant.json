@@ -19,7 +19,7 @@
       "guests_named": false,
       "purpose_fits_receipt": true,
       "personal_items": false,
-      "receipt_kind": "itemised_receipt",
+      "receipt_kind": "proof_of_purchase",
       "purpose_detail": 2
     },
     "computed": {

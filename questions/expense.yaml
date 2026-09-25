@@ -15,7 +15,7 @@ served_food_charged:
   type: noul
   instructions: Does `invoice_text` charge for food served to eat on the spot, such as a restaurant meal, room service or a breakfast on its own line?
   criteria:
-    "true": At least one line is food served at a restaurant, cafe, hotel or similar, including snacks from a minibar.
+    "true": At least one line is food served at a restaurant, cafe, hotel or similar, including snacks from a minibar. Drinks alone, including alcohol, count as no.
     "false": No served food is charged. Groceries to take away and breakfast included in the room price without its own line count as no.
 
 alcohol_charged:
@@ -71,11 +71,9 @@ personal_items:
 
 receipt_kind:
   type: choice
-  instructions: What kind of document is `invoice_text`? If it shows an invoice number, answer invoice. If it is a travel ticket, answer ticket.
+  instructions: What kind of document is `invoice_text`?
   criteria:
-    invoice: A document with an invoice number from the seller.
-    ticket: A travel ticket that shows the journey and the price paid, without an invoice number.
-    itemised_receipt: A receipt without an invoice number that lists what was bought, line by line, with prices.
+    proof_of_purchase: A receipt, ticket or invoice that shows what was bought and the price paid.
     card_slip: A payment terminal slip that shows only the card payment and the total, not what was bought.
     booking_confirmation: A confirmation of a booking or order, not proof of payment.
     other: Any other document.

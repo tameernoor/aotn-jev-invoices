@@ -12,7 +12,7 @@ Jev, TypeSafe AI's System One model, answers narrow questions about an invoice. 
 
 ## The questions
 
-Each question targets one known expense or accounts-payable problem. Ids are never sent to the model, so each instruction carries the whole question; the rules in `src/jev_invoices/rules/` are the only code that reads an id.
+Each question targets one known expense or accounts-payable problem. Ids are never sent to the model, so each instruction carries the whole question; the rules in `src/jev_invoices/rules/` are the only code that decides on an answer.
 
 ### Expense (`questions/expense.yaml`)
 
@@ -23,7 +23,7 @@ Each question targets one known expense or accounts-payable problem. Ids are nev
 | `alcohol_charged` | noul | Alcoholic drinks, treated the same as served food. |
 | `transport_charged` | noul | A taxi ride or travel ticket, billed at the low VAT rate, kept apart from parking or fuel. |
 | `goods_charged` | noul | Goods taken away, billed at the regular VAT rate. |
-| `hosted_guests` | noul | Customer entertainment (representasjon), which gets no VAT deduction. |
+| `hosted_guests` | noul | Customer entertainment (representasjon), whose guests must then be named, and a meal with guests gets no VAT deduction. |
 | `guests_named` | noul | An entertainment claim that does not name who was hosted. |
 | `purpose_fits_receipt` | noul | A stated purpose that does not match what was actually bought. |
 | `personal_items` | noul | Private items, such as clothing or cosmetics, charged as a business expense. |
@@ -74,7 +74,7 @@ The answer is stored with the record. No rule reads it until someone writes one.
 
 ## What gets stored
 
-Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `judgments` (what Jev answered) apart from `computed` (what the code decided), and `jev` holds the model version, latency, input tokens and cost. The price per million tokens is stored next to the cost, because one invoice costs about $0.00004 at roughly 1,000 input tokens, measured with the bench.
+Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `judgments` (what Jev answered) apart from `computed` (what the code decided), and `jev` holds the model version, latency, input tokens and cost. The price per million tokens is stored next to the cost, because one invoice costs about $0.00006 at roughly 1,500 input tokens, measured with the bench.
 
 ## Language bench
 

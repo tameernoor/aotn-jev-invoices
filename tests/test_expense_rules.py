@@ -12,7 +12,7 @@ BASE = dict(
     guests_named=0.05,
     purpose_fits_receipt=0.95,
     personal_items=0.05,
-    receipt_kind="itemised_receipt",
+    receipt_kind="proof_of_purchase",
     purpose_detail=level(1),
 )
 
@@ -33,7 +33,7 @@ def test_domestic_hotel_only_is_low_rate():
 
 
 def test_hotel_and_minibar_food_splits_two_kinds():
-    result = code(judged(lodging_charged=0.95, served_food_charged=0.95))
+    result = code(judged(lodging_charged=0.95, alcohol_charged=0.95))
     assert result["should_split"] is True
     assert result["kinds"] == ["lodging", "food_and_drink"]
     assert result["saft_code"] is None
@@ -56,8 +56,9 @@ def test_dinner_with_guests_not_named_flags():
 
 
 def test_guests_named_not_read_when_hosted_guests_is_no():
-    result = code(judged(served_food_charged=0.95))
+    result = code(judged(served_food_charged=0.95, guests_named=0.5))
     assert "guests_named" not in result["judgments_read"]
+    assert result["needs_review"] is False
 
 
 def test_meal_without_guests_is_servering_no_deduction():
@@ -91,8 +92,8 @@ def test_booking_confirmation_is_not_valid_documentation():
     assert any("Not valid documentation" in flag for flag in result["flags"])
 
 
-def test_ticket_is_accepted_documentation():
-    result = code(judged(transport_charged=0.95, receipt_kind="ticket"))
+def test_proof_of_purchase_is_accepted_documentation():
+    result = code(judged(transport_charged=0.95, receipt_kind="proof_of_purchase"))
     assert not any("Not valid documentation" in flag for flag in result["flags"])
 
 
@@ -114,8 +115,8 @@ def test_generic_purpose_detail_flags():
 def test_low_confidence_receipt_kind_is_uncertain_and_reviewed():
     low_confidence = {
         "type": "choice",
-        "value": "itemised_receipt",
-        "probabilities": {"itemised_receipt": 0.5},
+        "value": "proof_of_purchase",
+        "probabilities": {"proof_of_purchase": 0.5},
         "confidence": 0.5,
     }
     result = code(judged(goods_charged=0.95, receipt_kind=low_confidence))
@@ -125,7 +126,7 @@ def test_low_confidence_receipt_kind_is_uncertain_and_reviewed():
 
 
 def test_foreign_reads_none_of_the_kind_judgments():
-    result = code(judged(), vendor="SE")
+    result = code(judged(lodging_charged=0.5), vendor="SE")
     kind_ids = {"lodging_charged", "served_food_charged", "alcohol_charged", "transport_charged", "goods_charged"}
     assert result["foreign_purchase"] is True
     assert result["saft_code"] == "0"

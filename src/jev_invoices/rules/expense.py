@@ -27,7 +27,7 @@ def vat_rates_found(text: str) -> list[str]:
     return sorted(rates, key=float)
 
 
-ACCEPTED_DOCUMENTS = {"itemised_receipt", "ticket", "invoice"}
+ACCEPTED_DOCUMENTS = {"proof_of_purchase"}
 GENERIC_PURPOSE_BELOW = 0.5  # purpose_detail level 0
 
 

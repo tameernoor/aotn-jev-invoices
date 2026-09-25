@@ -37,7 +37,7 @@ def test_computed_check_runs_the_real_rules_and_reports_differences():
         hosted_guests=0.05,
         purpose_fits_receipt=0.95,
         personal_items=0.05,
-        receipt_kind="itemised_receipt",
+        receipt_kind="proof_of_purchase",
         purpose_detail=level(1),
     )
     matching = computed_check("expense", sample["request"], judgments, sample["expected"]["computed"])
