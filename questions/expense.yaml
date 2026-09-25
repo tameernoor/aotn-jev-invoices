@@ -1,0 +1,58 @@
+# Expense invoice questions. All are sent to Jev in one request.
+# Ids are never sent to the model, so each instruction carries the whole question.
+# Keys "true" and "false" are quoted so YAML keeps them as strings.
+
+accommodation:
+  type: noul
+  instructions: Is this invoice mainly for accommodation, such as a hotel stay or other lodging?
+
+food:
+  type: noul
+  instructions: Does the invoice charge for food or meals, such as a restaurant meal, room service or a separately charged breakfast?
+  criteria:
+    "true": Food or a meal appears as a charge on the invoice.
+    "false": No food or meal is charged. Breakfast included in the room price without its own line counts as no.
+
+alcohol:
+  type: noul
+  instructions: Does the invoice include alcoholic drinks?
+  criteria:
+    "true": At least one line is an alcoholic drink such as beer, wine, cider or spirits, including minibar items.
+    "false": No line is an alcoholic drink.
+
+passenger_transport:
+  type: noul
+  instructions: Does the invoice include passenger transport, such as a taxi, train, bus, ferry or flight ticket?
+
+customer_entertainment:
+  type: noul
+  instructions: Was this expense for hosting customers or other business contacts? Use `expense_purpose` together with `invoice_text`.
+  criteria:
+    "true": The purpose or the invoice shows that guests from outside the company were hosted.
+    "false": Only the employee or colleagues were involved, or nothing indicates hosting.
+
+multiple_types:
+  type: noul
+  instructions: Does the invoice contain more than one kind of expense?
+  criteria:
+    "true": Two or more kinds are charged. The kinds are accommodation, meals and drinks, transport, and goods. Food and drinks from one restaurant visit count as one kind.
+    "false": Everything charged is one kind of expense.
+
+category:
+  type: choice
+  instructions: What is the main kind of expense on this invoice?
+  criteria:
+    accommodation: Hotel room or other lodging.
+    food: Meals or food served, restaurant or cafe.
+    alcohol: Mainly alcoholic drinks.
+    passenger_transport: Taxi, train, bus, ferry or flight.
+    entertainment: Hosting customers or business contacts.
+    other: Anything else, such as office supplies or equipment.
+
+ambiguity:
+  type: score
+  instructions: How hard is it to tell what this invoice is for?
+  criteria:
+    - Clear, the invoice plainly shows what was bought.
+    - Somewhat unclear, a reader has to guess at one or more lines.
+    - Very unclear, the invoice does not say what was bought.

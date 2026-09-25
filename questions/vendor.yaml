@@ -1,0 +1,17 @@
+# Vendor invoice questions. Jev judges descriptions only.
+# Amounts, dates, invoice numbers and bank accounts are compared in code.
+
+lines_describe_po:
+  type: noul
+  instructions: Do the lines in `invoice_text` describe the same goods or services that were ordered in `purchase_order`? Judge the descriptions only, not quantities, prices or totals.
+
+bank_change_announced:
+  type: noul
+  instructions: Does `invoice_text` announce a new or changed bank account for payment?
+  criteria:
+    "true": The text says payment should go to a new, changed or different account.
+    "false": The text only states where to pay, with no mention of a change.
+
+same_delivery_as_earlier:
+  type: noul
+  instructions: Do the lines in `invoice_text` describe the same delivery as the text of any invoice in `earlier_invoices`? Judge what was delivered and when, not the invoice number or the amount.
