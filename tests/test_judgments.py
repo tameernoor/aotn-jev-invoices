@@ -65,3 +65,31 @@ def test_score_is_read_and_not_marked_uncertain():
     assert j.score("purpose_detail") == 2.0
     assert j.read == ["purpose_detail"]
     assert j.uncertain == []
+
+
+def test_score_with_middling_probability_of_level_zero_is_uncertain():
+    j = Judgments(
+        {"purpose_detail": {"type": "score", "value": 1.0, "probabilities": {"0": 0.45, "1": 0.55}}}
+    )
+    assert j.score("purpose_detail") == 1.0
+    assert j.uncertain == ["purpose_detail"]
+
+
+def test_score_with_high_probability_of_level_zero_is_not_uncertain():
+    j = Judgments({"purpose_detail": {"type": "score", "value": 0.0, "probabilities": {"0": 0.97}}})
+    assert j.score("purpose_detail") == 0.0
+    assert j.uncertain == []
+
+
+def test_score_with_low_probability_of_level_zero_is_not_uncertain():
+    j = Judgments(
+        {"purpose_detail": {"type": "score", "value": 1.0, "probabilities": {"0": 0.03, "1": 0.97}}}
+    )
+    assert j.score("purpose_detail") == 1.0
+    assert j.uncertain == []
+
+
+def test_score_without_probabilities_is_not_uncertain():
+    j = Judgments({"purpose_detail": {"type": "score", "value": 1.0}})
+    assert j.score("purpose_detail") == 1.0
+    assert j.uncertain == []

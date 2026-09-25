@@ -38,9 +38,10 @@ def score(judgments: dict, expected: dict) -> dict:
     true, or <= NO when it is false; a value strictly between NO and YES is uncertain,
     neither correct nor a miss. A choice (str expected) is correct on an exact match; one
     read with confidence below CHOICE_MIN_CONFIDENCE counts as uncertain instead, whatever
-    its value. A score level (int expected) is correct when its value is within 0.5 of the
-    level, otherwise a miss; levels are never uncertain. Booleans are checked before ints,
-    since bool is a subtype of int in Python.
+    its value. A score level (int expected) is correct when `level - 0.5 <= value < level +
+    0.5`, the same half-open halfway points the rules use, otherwise a miss; levels are
+    never uncertain. Booleans are checked before ints, since bool is a subtype of int in
+    Python.
     """
     correct = 0
     uncertain = []
@@ -65,7 +66,7 @@ def score(judgments: dict, expected: dict) -> dict:
             else:
                 misses.append(qid)
         else:  # int: a score level
-            if abs(answer["value"] - want) < 0.5:
+            if want - 0.5 <= answer["value"] < want + 0.5:
                 correct += 1
             else:
                 misses.append(qid)
@@ -136,8 +137,10 @@ async def run() -> list[dict]:
                 if kind == "expense":
                     questions = expense_questions
                 else:
+                    earlier = [e.model_dump() for e in body.earlier_invoices]
+                    recent = recent_invoices(body.invoice_date, earlier)
                     questions = vendor_request_questions(
-                        vendor_questions, [e.model_dump() for e in body.earlier_invoices]
+                        vendor_questions, [e for e in earlier if e["invoice_number"] in recent]
                     )
                 result = await jev.ask(body.state(), questions)
                 rows.append(

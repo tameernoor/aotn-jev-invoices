@@ -90,7 +90,11 @@ def create_app(ask: AskFn | None = None, store: Store | None = None) -> FastAPI:
     @app.post("/vendor-invoices", response_model=InvoiceRecord)
     async def post_vendor_invoice(body: VendorInvoiceIn) -> InvoiceRecord:
         earlier = [e.model_dump() for e in body.earlier_invoices]
-        base = vendor_request_questions(vendor_questions, earlier)
+        recent = recent_invoices(body.invoice_date, earlier)
+        try:
+            base = vendor_request_questions(vendor_questions, [e for e in earlier if e["invoice_number"] in recent])
+        except QuestionCollision as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
         result = await judge(body.state(), base, body.extra_questions)
         checks = exact_checks(
             invoice_number=body.invoice_number,
@@ -100,7 +104,6 @@ def create_app(ask: AskFn | None = None, store: Store | None = None) -> FastAPI:
             po_total=body.purchase_order.total,
             earlier_invoices=earlier,
         )
-        recent = recent_invoices(body.invoice_date, earlier)
         computed = decide_vendor(result.judgments, checks, recent)
         return save("vendor", body, result, VendorComputed(**computed))
 

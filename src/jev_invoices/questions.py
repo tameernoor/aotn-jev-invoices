@@ -74,9 +74,17 @@ def duplicate_question_id(invoice_number: str) -> str:
 
 
 def duplicate_questions(earlier_invoices: list[dict]) -> dict[str, dict]:
-    """One yes/no question per earlier invoice, built at request time from data."""
-    return {
-        duplicate_question_id(e["invoice_number"]): {
+    """One yes/no question per earlier invoice, built at request time from data.
+
+    Raises QuestionCollision when two earlier invoices sanitise to the same question id,
+    or when an invoice number sanitises to nothing at all.
+    """
+    questions: dict[str, dict] = {}
+    for e in earlier_invoices:
+        qid = duplicate_question_id(e["invoice_number"])
+        if qid == "same_as_" or qid in questions:
+            raise QuestionCollision(f"earlier invoices collide on question id: {qid}")
+        questions[qid] = {
             "type": "noul",
             "instructions": {
                 "earlier_invoice": {"invoice_number": e["invoice_number"], "text": e["text"]},
@@ -84,8 +92,7 @@ def duplicate_questions(earlier_invoices: list[dict]) -> dict[str, dict]:
             },
             "criteria": dict(DUPLICATE_CRITERIA),
         }
-        for e in earlier_invoices
-    }
+    return questions
 
 
 def vendor_request_questions(base: dict[str, dict], earlier_invoices: list[dict]) -> dict[str, dict]:

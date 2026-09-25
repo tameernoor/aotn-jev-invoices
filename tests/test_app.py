@@ -112,15 +112,38 @@ def test_in_window_duplicate_answer_sends_the_invoice_to_review(make_client):
     assert any("20877" in reason for reason in record["computed"]["reasons"])
 
 
-def test_out_of_window_duplicate_answer_is_not_read_and_approves(make_client):
+def test_out_of_window_earlier_invoice_gets_no_duplicate_question_and_approves(make_client):
     body = {
         **VENDOR_BODY,
         "earlier_invoices": [{**VENDOR_BODY["earlier_invoices"][0], "invoice_date": "2026-07-01"}],
     }
-    fake = FakeJev({"po_items_billed": 0.95, "same_as_20877": 0.95})
+    fake = FakeJev({"po_items_billed": 0.95})
     record = make_client(fake).post("/vendor-invoices", json=body).json()
+    assert "same_as_20877" not in fake.calls[0]["questions"]
     assert record["computed"]["decision"] == "approve"
     assert "same_as_20877" not in record["computed"]["judgments_read"]
+
+
+def test_earlier_invoices_colliding_on_the_same_question_id_is_422(make_client):
+    body = {
+        **VENDOR_BODY,
+        "earlier_invoices": [
+            {"invoice_number": "INV-1", "invoice_date": "2026-09-01", "amount": "100.00", "text": "a"},
+            {"invoice_number": "INV/1", "invoice_date": "2026-09-01", "amount": "100.00", "text": "b"},
+        ],
+    }
+    response = make_client(FakeJev()).post("/vendor-invoices", json=body)
+    assert response.status_code == 422
+
+
+def test_more_than_fifty_earlier_invoices_is_422(make_client):
+    earlier = [
+        {"invoice_number": str(i), "invoice_date": "2026-09-01", "amount": "100.00", "text": "x"}
+        for i in range(51)
+    ]
+    body = {**VENDOR_BODY, "earlier_invoices": earlier}
+    response = make_client(FakeJev()).post("/vendor-invoices", json=body)
+    assert response.status_code == 422
 
 
 def test_vendor_jev_down_is_502_and_nothing_is_saved(make_client):

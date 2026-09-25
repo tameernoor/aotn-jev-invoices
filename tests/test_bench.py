@@ -6,9 +6,21 @@ from jev_invoices.bench import SAMPLES_DIR, computed_check, load_samples, score,
 
 
 def test_score_uses_the_apps_thresholds_and_reports_uncertain_separately():
-    judgments = answers(alcohol=0.9, food=0.5, passenger_transport=0.1, category="food")
-    result = score(judgments, {"alcohol": True, "food": True, "passenger_transport": True, "category": "food"})
-    assert result == {"correct": 2, "uncertain": ["food"], "misses": ["passenger_transport"], "total": 4}
+    judgments = answers(
+        alcohol_charged=0.9, served_food_charged=0.5, transport_charged=0.1, receipt_kind="proof_of_purchase"
+    )
+    result = score(
+        judgments,
+        {
+            "alcohol_charged": True,
+            "served_food_charged": True,
+            "transport_charged": True,
+            "receipt_kind": "proof_of_purchase",
+        },
+    )
+    assert result == {
+        "correct": 2, "uncertain": ["served_food_charged"], "misses": ["transport_charged"], "total": 4
+    }
 
 
 def test_score_scores_a_score_level_hit_and_miss():
@@ -18,6 +30,20 @@ def test_score_scores_a_score_level_hit_and_miss():
 
     miss = score(judgments, {"line_specificity": 1})
     assert miss == {"correct": 0, "uncertain": [], "misses": ["line_specificity"], "total": 1}
+
+
+def test_score_level_boundary_matches_the_rules_half_open_treatment():
+    # The rules treat a score value as level 1 when 0.5 <= value < 1.5 (constraints.md).
+    # The lower bound is inclusive, the upper bound is not.
+    lower_bound = {"line_specificity": {"type": "score", "value": 0.5}}
+    assert score(lower_bound, {"line_specificity": 1}) == {
+        "correct": 1, "uncertain": [], "misses": [], "total": 1
+    }
+
+    upper_bound = {"line_specificity": {"type": "score", "value": 1.5}}
+    assert score(upper_bound, {"line_specificity": 1}) == {
+        "correct": 0, "uncertain": [], "misses": ["line_specificity"], "total": 1
+    }
 
 
 def test_score_counts_a_low_confidence_choice_as_uncertain():
@@ -74,7 +100,7 @@ def test_summarise_per_language():
         {
             "lang": "no",
             "correct": 6,
-            "uncertain": ["food"],
+            "uncertain": ["served_food_charged"],
             "misses": [],
             "total": 7,
             "computed": {"matches": True, "differences": {}},

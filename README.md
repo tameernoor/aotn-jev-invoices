@@ -23,7 +23,7 @@ Each question targets one known expense or accounts-payable problem. Ids are nev
 | `alcohol_charged` | noul | Alcoholic drinks, treated the same as served food. |
 | `transport_charged` | noul | A taxi ride or travel ticket, billed at the low VAT rate, kept apart from parking or fuel. |
 | `goods_charged` | noul | Goods taken away, billed at the regular VAT rate. |
-| `hosted_guests` | noul | Customer entertainment (representasjon), whose guests must then be named, and a meal with guests gets no VAT deduction. |
+| `hosted_guests` | noul | Customer entertainment (representasjon), whose guests must then be named. A meal with guests gets the same VAT code as any served meal; only the reason differs. |
 | `guests_named` | noul | An entertainment claim that does not name who was hosted. |
 | `purpose_fits_receipt` | noul | A stated purpose that does not match what was actually bought. |
 | `personal_items` | noul | Private items, such as clothing or cosmetics, charged as a business expense. |
@@ -41,7 +41,7 @@ Each question targets one known expense or accounts-payable problem. Ids are nev
 | `payment_pressure` | noul | Urgent or threatening language pushing to skip the normal approval. |
 | `document_kind` | choice | A reminder, credit note or statement sent in as if it were a fresh invoice. |
 
-Vendor invoices also get one generated yes/no question per earlier invoice, asking whether it is the same delivery as invoice X; code builds these at request time from the earlier invoices sent with the request, and only reads the ones dated close enough to the invoice being judged.
+Vendor invoices also get one generated yes/no question per earlier invoice, asking whether it is the same delivery as invoice X; code builds these at request time, one only for each earlier invoice dated inside the 60-day resend window.
 
 ## Run it
 
@@ -82,7 +82,7 @@ Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `
 uv run --env-file .env python -m jev_invoices.bench
 ```
 
-Runs every sample with its Norwegian text and with an English translation, and writes `out/bench.json`. It scores Jev's answers at the app's own thresholds, reports uncertain answers separately from misses, and checks the rules' output (`needs_review`, `saft_code`, `decision`) against each sample's expected result. TypeSafe says English is where Jev is most accurate, so this shows how much Norwegian costs.
+Runs every sample with its Norwegian text and with an English translation, and writes `out/bench.json`. It scores Jev's answers at the app's own thresholds, reports uncertain answers separately from misses, and checks every value in each sample's expected computed result against the rules' output, not only `needs_review`, `saft_code` or `decision`. On the card-slip sample, Jev can infer served food from the shop's name, so that sample's computed values can differ from the literal expectation. TypeSafe says English is where Jev is most accurate, so this shows how much Norwegian costs.
 
 ## Tests
 
@@ -94,6 +94,6 @@ uv run --env-file .env pytest -m live -v        # one real call
 ## Limits
 
 - The VAT rules are illustrative and simplified. They are not tax advice. Codes are Skatteetaten's SAF-T standard tax codes.
-- The duplicate check only compares against the earlier invoices sent with the request.
+- Code only generates a duplicate question for earlier invoices dated inside the 60-day resend window, and a request carries at most 50 earlier invoices.
 - Invoice text is expected to be extracted already. There is no OCR.
 - Setting `TYPESAFE_BASE_URL` points the same code at any server that speaks the same API. `cost_usd` always uses Jev's price, so it is only accurate when the server behind that URL is Jev.

@@ -47,7 +47,7 @@ def apply_tax_rules(judgments: dict, *, invoice_text: str, employee_country: str
     else:
         if j.lodging_charged:
             kinds.append("lodging")
-        if j.served_food_charged or j.alcohol_charged:
+        if j.alcohol_charged or j.served_food_charged:
             kinds.append("food_and_drink")
         if j.transport_charged:
             kinds.append("transport")

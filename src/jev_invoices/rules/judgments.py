@@ -41,7 +41,13 @@ class Judgments:
 
     def score(self, qid: str) -> float:
         self._mark_read(qid)
-        return float(self._raw[qid]["value"])
+        answer = self._raw[qid]
+        probabilities = answer.get("probabilities")
+        if probabilities is not None:
+            p0 = probabilities.get("0", 0.0)
+            if NO < p0 < YES and qid not in self.uncertain:
+                self.uncertain.append(qid)
+        return float(answer["value"])
 
     def __getattr__(self, name: str) -> bool:
         if name.startswith("_"):

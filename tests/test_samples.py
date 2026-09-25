@@ -11,7 +11,9 @@ from fakes import FakeJev
 from fastapi.testclient import TestClient
 
 from jev_invoices.app import create_app
+from jev_invoices.models import VendorInvoiceIn
 from jev_invoices.questions import load_questions, vendor_request_questions
+from jev_invoices.rules.vendor import recent_invoices
 from jev_invoices.store import Store
 
 SAMPLES = Path(__file__).resolve().parents[1] / "samples"
@@ -34,7 +36,12 @@ def fake_values(expected_judgments: dict) -> dict:
 
 def asked_ids(kind: str, request: dict) -> set[str]:
     if kind == "vendor":
-        return set(vendor_request_questions(load_questions("vendor"), request.get("earlier_invoices", [])))
+        body = VendorInvoiceIn.model_validate(request)
+        earlier = [e.model_dump() for e in body.earlier_invoices]
+        recent = recent_invoices(body.invoice_date, earlier)
+        return set(
+            vendor_request_questions(load_questions("vendor"), [e for e in earlier if e["invoice_number"] in recent])
+        )
     return set(load_questions(kind))
 
 

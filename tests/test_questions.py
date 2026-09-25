@@ -131,6 +131,18 @@ def test_duplicate_questions_one_per_earlier_invoice():
     assert list(duplicate_questions(earlier)) == ["same_as_20877", "same_as_20931"]
 
 
+def test_duplicate_questions_raises_on_colliding_sanitised_ids():
+    earlier = [{"invoice_number": "INV-1", "text": "a"}, {"invoice_number": "INV/1", "text": "b"}]
+    with pytest.raises(QuestionCollision, match="same_as_INV_1"):
+        duplicate_questions(earlier)
+
+
+def test_duplicate_questions_raises_on_empty_sanitised_id():
+    earlier = [{"invoice_number": "///", "text": "a"}]
+    with pytest.raises(QuestionCollision, match="same_as_"):
+        duplicate_questions(earlier)
+
+
 def test_duplicate_questions_do_not_share_the_same_criteria_object():
     earlier = [
         {"invoice_number": "20877", "text": "a"},

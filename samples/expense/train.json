@@ -20,7 +20,7 @@
       "purpose_fits_receipt": true,
       "personal_items": false,
       "receipt_kind": "proof_of_purchase",
-      "purpose_detail": 2
+      "purpose_detail": 1
     },
     "computed": {
       "saft_code": "13",

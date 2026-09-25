@@ -40,6 +40,13 @@ def test_hotel_and_minibar_food_splits_two_kinds():
     assert result["needs_review"] is False
 
 
+def test_alcohol_is_read_before_served_food_and_short_circuits():
+    result = code(judged(alcohol_charged=0.95, served_food_charged=0.5))
+    assert result["kinds"] == ["food_and_drink"]
+    assert "served_food_charged" not in result["judgments_read"]
+    assert result["needs_review"] is False
+
+
 def test_dinner_with_named_guests_is_no_deduction_entertainment():
     result = code(judged(served_food_charged=0.95, hosted_guests=0.95, guests_named=0.95))
     assert result["saft_code"] == "0"

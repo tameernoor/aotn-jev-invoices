@@ -5,7 +5,7 @@
     "invoice_text": "Hotell Nordkajen AB\nOrg.nr 556000-0002\nKvitto 7781, 15.09.2026\nGäst: Kari Nordmann\n\nRum, 1 natt  1 690,00 SEK\nRestaurang, middag  425,00 SEK\n\nSumma  2 115,00 SEK\nVarav moms 12 %  226,61 SEK",
     "employee_country": "NO",
     "vendor_country": "SE",
-    "expense_purpose": "Tjenestereise til Stockholm, messen Nordic Logistics Expo"
+    "expense_purpose": "Tjenestereise til Stockholm, messen Fjordlogistikk 2026"
   },
   "text_en": "Hotell Nordkajen AB\nCompany no. 556000-0002\nReceipt 7781, 2026-09-15\nGuest: Kari Nordmann\n\nRoom, 1 night  1,690.00 SEK\nRestaurant, dinner  425.00 SEK\n\nTotal  2,115.00 SEK\nof which VAT 12 %  226.61 SEK",
   "expected": {
@@ -20,7 +20,7 @@
       "purpose_fits_receipt": true,
       "personal_items": false,
       "receipt_kind": "proof_of_purchase",
-      "purpose_detail": 2
+      "purpose_detail": 1
     },
     "computed": {
       "saft_code": "0",

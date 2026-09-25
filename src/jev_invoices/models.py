@@ -58,7 +58,7 @@ class VendorInvoiceIn(BaseModel):
     bank_account: str
     vendor: VendorRecord
     purchase_order: PurchaseOrder
-    earlier_invoices: list[EarlierInvoice] = []
+    earlier_invoices: list[EarlierInvoice] = Field(default_factory=list, max_length=50)
     extra_questions: dict[str, Question] | None = None
 
     def state(self) -> dict:

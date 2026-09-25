@@ -15,7 +15,7 @@ served_food_charged:
   type: noul
   instructions: Does `invoice_text` charge for food served to eat on the spot, such as a restaurant meal, room service or a breakfast on its own line?
   criteria:
-    "true": At least one line is food served at a restaurant, cafe, hotel or similar, including snacks from a minibar. Drinks alone, including alcohol, count as no.
+    "true": At least one line names food served at a restaurant, cafe, hotel or similar, including snacks from a minibar. Judge only what the lines name, not the shop's name or `expense_purpose`. Drinks alone, including alcohol, count as no.
     "false": No served food is charged. Groceries to take away and breakfast included in the room price without its own line count as no.
 
 alcohol_charged:
@@ -57,7 +57,7 @@ guests_named:
 
 purpose_fits_receipt:
   type: noul
-  instructions: Does what `invoice_text` charges for fit the purpose given in `expense_purpose`?
+  instructions: Do most of the lines in `invoice_text` fit the purpose given in `expense_purpose`? A single private item does not make the answer no.
   criteria:
     "true": The purpose describes what was bought, or the purpose does not say what was bought.
     "false": The purpose describes something clearly different from what was bought, for example a train ticket when the receipt is for a restaurant.
@@ -73,7 +73,7 @@ receipt_kind:
   type: choice
   instructions: What kind of document is `invoice_text`?
   criteria:
-    proof_of_purchase: A receipt, ticket or invoice that shows what was bought and the price paid.
+    proof_of_purchase: A receipt, ticket or invoice that shows what was bought and its price.
     card_slip: A payment terminal slip that shows only the card payment and the total, not what was bought.
     booking_confirmation: A confirmation of a booking or order, not proof of payment.
     other: Any other document.
@@ -84,4 +84,4 @@ purpose_detail:
   criteria:
     - Missing, or a single generic word with no subject, such as "meeting", "work" or "travel".
     - Names what kind of work it was, such as "project meeting", "sales course", "customer dinner" or "trip home from a conference".
-    - Names the specific event, project, place or people, such as "contract law course in Oslo" or "dinner with Hansen from Acme AS".
+    - Names the specific event, project or people, such as "contract law course" or "dinner with Hansen from Acme AS".
