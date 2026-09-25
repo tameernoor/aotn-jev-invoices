@@ -46,6 +46,11 @@ def test_bank_accounts_match_regardless_of_separators():
     assert checks(bank_account="9710.05.12345")["bank_account_matches"] is False
 
 
+def test_an_empty_bank_account_does_not_match():
+    assert checks(bank_account="", bank_account_on_file="")["bank_account_matches"] is False
+    assert checks(bank_account="n/a", bank_account_on_file="1503.12.34567")["bank_account_matches"] is False
+
+
 def test_reused_invoice_number_is_seen():
     assert checks(invoice_number="20877")["invoice_number_seen"] is True
 

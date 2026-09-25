@@ -1,29 +1,81 @@
+import json
+
 from fakes import answers
 
-from jev_invoices.bench import load_samples, score, summarise
+from jev_invoices.bench import SAMPLES_DIR, computed_check, load_samples, score, summarise
 
 
-def test_score_uses_half_as_the_line_for_nouls_and_equality_for_choices():
-    judgments = answers(alcohol=0.7, food=0.3, category="food")
-    result = score(judgments, {"alcohol": True, "food": True, "category": "food"})
-    assert result == {"correct": 2, "total": 3, "misses": ["food"]}
+def test_score_uses_the_apps_thresholds_and_reports_uncertain_separately():
+    judgments = answers(alcohol=0.9, food=0.5, passenger_transport=0.1, category="food")
+    result = score(judgments, {"alcohol": True, "food": True, "passenger_transport": True, "category": "food"})
+    assert result == {"correct": 2, "uncertain": ["food"], "misses": ["passenger_transport"], "total": 4}
+
+
+def test_computed_check_runs_the_real_rules_and_reports_differences():
+    sample = json.loads((SAMPLES_DIR / "expense" / "taxi.json").read_text(encoding="utf-8"))
+    judgments = answers(
+        accommodation=0.05,
+        food=0.05,
+        alcohol=0.05,
+        passenger_transport=0.95,
+        customer_entertainment=0.05,
+        multiple_types=0.05,
+        category="passenger_transport",
+    )
+    matching = computed_check("expense", sample["request"], judgments, sample["expected"]["computed"])
+    assert matching == {"matches": True, "differences": {}}
+
+    judgments["multiple_types"] = {"type": "noul", "value": 0.5}
+    mismatching = computed_check("expense", sample["request"], judgments, sample["expected"]["computed"])
+    assert mismatching["matches"] is False
+    assert mismatching["differences"] == {"needs_review": {"expected": False, "got": True}}
 
 
 def test_summarise_per_language():
     rows = [
-        {"lang": "no", "correct": 6, "total": 7, "jev": {"latency_ms": 100.0, "input_tokens": 1000, "cost_usd": 0.00004}},
-        {"lang": "no", "correct": 7, "total": 7, "jev": {"latency_ms": 300.0, "input_tokens": 3000, "cost_usd": 0.00012}},
-        {"lang": "en", "correct": 7, "total": 7, "jev": {"latency_ms": 200.0, "input_tokens": 2000, "cost_usd": 0.00008}},
+        {
+            "lang": "no",
+            "correct": 6,
+            "uncertain": ["food"],
+            "misses": [],
+            "total": 7,
+            "computed": {"matches": True, "differences": {}},
+            "jev": {"latency_ms": 100.0, "input_tokens": 1000, "cost_usd": 0.00004},
+        },
+        {
+            "lang": "no",
+            "correct": 7,
+            "uncertain": [],
+            "misses": [],
+            "total": 7,
+            "computed": {"matches": False, "differences": {"saft_code": {"expected": "1", "got": "0"}}},
+            "jev": {"latency_ms": 300.0, "input_tokens": 3000, "cost_usd": 0.00012},
+        },
+        {
+            "lang": "en",
+            "correct": 7,
+            "uncertain": [],
+            "misses": [],
+            "total": 7,
+            "computed": {"matches": True, "differences": {}},
+            "jev": {"latency_ms": 200.0, "input_tokens": 2000, "cost_usd": 0.00008},
+        },
     ]
     summary = summarise(rows)
     assert summary["no"] == {
         "correct": 13,
+        "uncertain": 1,
+        "misses": 0,
         "total": 14,
+        "computed_matches": 1,
+        "rows": 2,
         "mean_latency_ms": 200.0,
         "mean_input_tokens": 2000.0,
         "total_cost_usd": 0.00016,
     }
     assert summary["en"]["correct"] == 7
+    assert summary["en"]["computed_matches"] == 1
+    assert summary["en"]["rows"] == 1
 
 
 def test_load_samples_finds_both_kinds():

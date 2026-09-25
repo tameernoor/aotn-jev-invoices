@@ -41,7 +41,7 @@ The answer is stored with the record. No rule reads it until someone writes one.
 
 ## What gets stored
 
-Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `judgments` (what Jev answered) apart from `computed` (what the code decided), and `jev` holds the model version, request time, input tokens and cost. The price per million tokens is stored next to the cost, because one invoice costs around a hundredth of a cent.
+Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `judgments` (what Jev answered) apart from `computed` (what the code decided), and `jev` holds the model version, latency, input tokens and cost. The price per million tokens is stored next to the cost, because one invoice costs about $0.00004 at roughly 1,000 input tokens, measured with the bench.
 
 ## Language bench
 
@@ -49,7 +49,7 @@ Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `
 uv run --env-file .env python -m jev_invoices.bench
 ```
 
-Runs every sample with its Norwegian text and with an English translation, compares Jev's answers with the expected ones, and writes `out/bench.json`. TypeSafe says English is where Jev is most accurate, so this shows how much Norwegian costs.
+Runs every sample with its Norwegian text and with an English translation, and writes `out/bench.json`. It scores Jev's answers at the app's own thresholds, reports uncertain answers separately from misses, and checks the rules' output (`needs_review`, `saft_code`, `decision`) against each sample's expected result. TypeSafe says English is where Jev is most accurate, so this shows how much Norwegian costs.
 
 ## Tests
 
@@ -63,4 +63,4 @@ uv run --env-file .env pytest -m live -v        # one real call
 - The VAT rules are illustrative and simplified. They are not tax advice. Codes are Skatteetaten's SAF-T standard tax codes.
 - The duplicate check only compares against the earlier invoices sent with the request.
 - Invoice text is expected to be extracted already. There is no OCR.
-- Setting `TYPESAFE_BASE_URL` points the same code at any server that speaks the same API.
+- Setting `TYPESAFE_BASE_URL` points the same code at any server that speaks the same API. `cost_usd` always uses Jev's price, so it is only accurate when the server behind that URL is Jev.

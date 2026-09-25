@@ -9,7 +9,7 @@ from jev_invoices.store import Store
 from test_models_store import VENDOR_BODY
 
 TAXI = {
-    "invoice_text": "Taxi Øst AS\nÅ betale 845,00\nHerav mva 12 %  90,54",
+    "invoice_text": "Taxi Nordlysveien AS\nÅ betale 845,00\nHerav mva 12 %  90,54",
     "employee_country": "NO",
     "vendor_country": "NO",
     "expense_purpose": "Hjemreise fra konferanse",

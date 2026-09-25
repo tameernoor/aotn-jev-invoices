@@ -15,7 +15,7 @@ VENDOR_BODY = {
     "invoice_date": "2026-09-12",
     "due_date": "2026-10-12",
     "bank_account": "1503.12.34567",
-    "vendor": {"name": "Nordlys Kontorservice AS", "org_number": "999 200 001", "bank_account_on_file": "1503.12.34567"},
+    "vendor": {"name": "Nordlys Kontorservice AS", "org_number": "999 200 002", "bank_account_on_file": "1503.12.34567"},
     "purchase_order": {
         "number": "PO-2026-118",
         "lines": [{"description": "Kaffebønner, hele, 1 kg", "quantity": "20", "unit_price": "189.00"}],

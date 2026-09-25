@@ -29,7 +29,9 @@ def exact_checks(
     return {
         "amount_within_tolerance": abs(amount - po_total) <= po_total * TOLERANCE,
         "invoice_number_seen": any(e["invoice_number"] == invoice_number for e in earlier_invoices),
-        "bank_account_matches": _digits(bank_account) == _digits(bank_account_on_file),
+        "bank_account_matches": bool(_digits(bank_account))
+        and bool(_digits(bank_account_on_file))
+        and _digits(bank_account) == _digits(bank_account_on_file),
         "same_amount_as_earlier": any(
             e["amount"] == amount and abs((invoice_date - e["invoice_date"]).days) <= RESEND_WINDOW_DAYS
             for e in earlier_invoices
