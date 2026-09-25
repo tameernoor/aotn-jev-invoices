@@ -101,11 +101,15 @@ def test_bank_mismatch_holds_reading_nothing():
 def test_bank_change_request_holds():
     result = decide_vendor(judged(bank_change_request=0.95), CLEAN, [])
     assert result["decision"] == "hold"
+    assert result["reasons"] == ["The invoice asks for payment to a new or changed bank account."]
+    assert "document_kind" not in result["judgments_read"]
 
 
 def test_payment_pressure_holds():
     result = decide_vendor(judged(payment_pressure=0.95), CLEAN, [])
     assert result["decision"] == "hold"
+    assert result["reasons"] == ["The invoice pushes for immediate payment or for skipping approval."]
+    assert "document_kind" not in result["judgments_read"]
 
 
 # --- decide_vendor: review ----------------------------------------------------
@@ -143,9 +147,33 @@ def test_out_of_window_duplicate_is_not_read_and_invoice_approves():
     assert result["duplicate_candidates"] == []
 
 
+def test_all_in_window_duplicate_questions_are_read_not_short_circuited():
+    # Guards the list comprehension in decide_vendor: an any(...) rewrite would stop
+    # reading after the first yes and miss the second earlier invoice's question.
+    result = decide_vendor(judged(**dup("20877", 0.95), **dup("20901", 0.5)), CLEAN, ["20877", "20901"])
+    assert result["decision"] == "review"
+    assert "same_as_20877" in result["judgments_read"]
+    assert "same_as_20901" in result["judgments_read"]
+    assert result["uncertain"] == ["same_as_20901"]
+    assert "earlier invoice 20877" in result["reasons"][0]
+
+
+def test_reason_names_every_in_window_duplicate():
+    result = decide_vendor(judged(**dup("20877", 0.95), **dup("20901", 0.95)), CLEAN, ["20877", "20901"])
+    assert result["decision"] == "review"
+    assert "earlier invoice 20877, 20901" in result["reasons"][0]
+
+
 def test_amount_outside_tolerance_goes_to_review():
     result = decide_vendor(judged(), {**CLEAN, "amount_within_tolerance": False}, [])
     assert result["decision"] == "review"
+
+
+def test_amount_outside_tolerance_takes_precedence_over_specificity():
+    result = decide_vendor(judged(line_specificity=level(0)), {**CLEAN, "amount_within_tolerance": False}, [])
+    assert result["decision"] == "review"
+    assert result["reasons"] == ["The amount differs from the purchase order total by more than 2 %."]
+    assert "line_specificity" not in result["judgments_read"]
 
 
 def test_specificity_level_zero_goes_to_review_without_reading_po_questions():
