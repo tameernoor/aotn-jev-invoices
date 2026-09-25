@@ -10,20 +10,24 @@
   "text_en": "Taxi Nordlysveien AS\nCompany no. 999 100 003 VAT\nReceipt 55120\nTrip: Oslo Airport to Majorstuen\n2026-09-04 at 07:12, 47 km\n\nAmount due  845.00\nof which VAT 12 %  90.54\nPaid by card",
   "expected": {
     "judgments": {
-      "accommodation": false,
-      "food": false,
-      "alcohol": false,
-      "passenger_transport": true,
-      "customer_entertainment": false,
-      "multiple_types": false,
-      "category": "passenger_transport"
+      "lodging_charged": false,
+      "served_food_charged": false,
+      "alcohol_charged": false,
+      "transport_charged": true,
+      "goods_charged": false,
+      "hosted_guests": false,
+      "guests_named": false,
+      "purpose_fits_receipt": true,
+      "personal_items": false,
+      "receipt_kind": "itemised_receipt",
+      "purpose_detail": 1
     },
     "computed": {
       "saft_code": "13",
       "should_split": false,
       "foreign_purchase": false,
+      "kinds": ["transport"],
       "vat_rates_found": ["12"],
-      "category_check": "agrees",
       "needs_review": false
     }
   }

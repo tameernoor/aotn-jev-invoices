@@ -11,7 +11,7 @@ from fakes import FakeJev
 from fastapi.testclient import TestClient
 
 from jev_invoices.app import create_app
-from jev_invoices.questions import load_questions
+from jev_invoices.questions import load_questions, vendor_request_questions
 from jev_invoices.store import Store
 
 SAMPLES = Path(__file__).resolve().parents[1] / "samples"
@@ -19,22 +19,34 @@ FILES = sorted(SAMPLES.glob("expense/*.json")) + sorted(SAMPLES.glob("vendor/*.j
 
 
 def fake_values(expected_judgments: dict) -> dict:
-    return {
-        qid: want if isinstance(want, str) else (0.95 if want else 0.05)
-        for qid, want in expected_judgments.items()
-    }
+    """Expected judgment values, in the shape FakeJev's `values` map accepts:
+    bool -> 0.95/0.05 (noul), str -> the choice unchanged, int -> a float score level."""
+    out = {}
+    for qid, want in expected_judgments.items():
+        if isinstance(want, bool):
+            out[qid] = 0.95 if want else 0.05
+        elif isinstance(want, str):
+            out[qid] = want
+        else:
+            out[qid] = float(want)
+    return out
 
 
-def test_there_are_ten_samples():
-    assert len(FILES) == 10
+def asked_ids(kind: str, request: dict) -> set[str]:
+    if kind == "vendor":
+        return set(vendor_request_questions(load_questions("vendor"), request.get("earlier_invoices", [])))
+    return set(load_questions(kind))
+
+
+def test_there_are_sixteen_samples():
+    assert len(FILES) == 16
 
 
 @pytest.mark.parametrize("path", FILES, ids=lambda p: p.stem)
 def test_sample_expectations_cover_every_question(path):
     sample = json.loads(path.read_text(encoding="utf-8"))
     kind = path.parent.name
-    asked = {qid for qid, q in load_questions(kind).items() if q["type"] != "score"}
-    assert set(sample["expected"]["judgments"]) == asked
+    assert set(sample["expected"]["judgments"]) == asked_ids(kind, sample["request"])
 
 
 @pytest.mark.parametrize("path", FILES, ids=lambda p: p.stem)

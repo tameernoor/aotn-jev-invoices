@@ -1,0 +1,34 @@
+{
+  "name": "card-slip-only",
+  "note": "A payment terminal slip with no line items. Nothing to code, and the documentation itself is insufficient.",
+  "request": {
+    "invoice_text": "BRASSERIE GLIMMERSTRAND\nTERMINAL 7730\n14.09.2026 21:14\nVISA ****4821\nKJØP NOK 1 240,00\nREF 004512\nGODKJENT",
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Middag med kolleger etter prosjektmøte"
+  },
+  "text_en": "BRASSERIE GLIMMERSTRAND\nTERMINAL 7730\n2026-09-14 21:14\nVISA ****4821\nPURCHASE NOK 1,240.00\nREF 004512\nAPPROVED",
+  "expected": {
+    "judgments": {
+      "lodging_charged": false,
+      "served_food_charged": false,
+      "alcohol_charged": false,
+      "transport_charged": false,
+      "goods_charged": false,
+      "hosted_guests": false,
+      "guests_named": false,
+      "purpose_fits_receipt": true,
+      "personal_items": false,
+      "receipt_kind": "card_slip",
+      "purpose_detail": 2
+    },
+    "computed": {
+      "saft_code": null,
+      "should_split": false,
+      "foreign_purchase": false,
+      "kinds": [],
+      "vat_rates_found": [],
+      "needs_review": true
+    }
+  }
+}

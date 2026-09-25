@@ -10,20 +10,24 @@
   "text_en": "Hotell Utsiktsporten Oslo AS\nCompany no. 999 100 001 VAT\nInvoice 44821, date 2026-09-03\nGuest: Kari Nordmann\n\nSingle room, 2 nights  2 x 1,450.00  2,900.00\nMinibar: Lager beer 0.33 l  1 x 89.00  89.00\n\nTotal incl. VAT  2,989.00\nof which VAT 12 %  310.71\nof which VAT 25 %  17.80\nPaid by card",
   "expected": {
     "judgments": {
-      "accommodation": true,
-      "food": false,
-      "alcohol": true,
-      "passenger_transport": false,
-      "customer_entertainment": false,
-      "multiple_types": true,
-      "category": "accommodation"
+      "lodging_charged": true,
+      "served_food_charged": false,
+      "alcohol_charged": true,
+      "transport_charged": false,
+      "goods_charged": false,
+      "hosted_guests": false,
+      "guests_named": false,
+      "purpose_fits_receipt": true,
+      "personal_items": false,
+      "receipt_kind": "invoice",
+      "purpose_detail": 2
     },
     "computed": {
       "saft_code": null,
       "should_split": true,
       "foreign_purchase": false,
+      "kinds": ["lodging", "food_and_drink"],
       "vat_rates_found": ["12", "25"],
-      "category_check": "not_checked",
       "needs_review": false
     }
   }

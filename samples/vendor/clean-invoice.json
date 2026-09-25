@@ -24,10 +24,18 @@
   },
   "text_en": "Nordlys Kontorservice AS\nCompany no. 999 200 002 VAT\nInvoice 20931, date 2026-09-12\nYour order: PO-2026-118\n\nCoffee beans, whole, 1 kg  20 x 189.00  3,780.00\nFilter paper 1x4, 100 pcs  10 x 39.00  390.00\nDelivered 2026-09-11, packing slip 5512\n\nAmount due  4,170.00\nof which VAT 15 %  493.04\nof which VAT 25 %  78.00\nDue 2026-10-12\nAccount number 1503.12.34567",
   "expected": {
-    "judgments": {"lines_describe_po": true, "bank_change_announced": false, "same_delivery_as_earlier": false},
+    "judgments": {
+      "line_specificity": 2,
+      "po_items_billed": true,
+      "unordered_items": false,
+      "bank_change_request": false,
+      "payment_pressure": false,
+      "document_kind": "invoice",
+      "same_as_20877": false
+    },
     "computed": {
       "decision": "approve",
-      "checks": {"amount_within_tolerance": true, "invoice_number_seen": false, "bank_account_matches": true, "same_amount_as_earlier": false}
+      "checks": {"amount_within_tolerance": true, "invoice_number_seen": false, "bank_account_matches": true}
     }
   }
 }

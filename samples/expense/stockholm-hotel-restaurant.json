@@ -1,31 +1,34 @@
 {
   "name": "stockholm-hotel-restaurant",
-  "note": "Swedish hotel with dinner on the bill. Foreign vendor decides the code, so none of Jev's answers are read.",
+  "note": "Swedish hotel with dinner on the bill. Foreign vendor decides the code, so none of Jev's kind answers are read.",
   "request": {
     "invoice_text": "Hotell Nordkajen AB\nOrg.nr 556000-0002\nKvitto 7781, 15.09.2026\nGäst: Kari Nordmann\n\nRum, 1 natt  1 690,00 SEK\nRestaurang, middag  425,00 SEK\n\nSumma  2 115,00 SEK\nVarav moms 12 %  226,61 SEK",
     "employee_country": "NO",
     "vendor_country": "SE",
-    "expense_purpose": "Tjenestereise til Stockholm"
+    "expense_purpose": "Tjenestereise til Stockholm, messen Nordic Logistics Expo"
   },
   "text_en": "Hotell Nordkajen AB\nCompany no. 556000-0002\nReceipt 7781, 2026-09-15\nGuest: Kari Nordmann\n\nRoom, 1 night  1,690.00 SEK\nRestaurant, dinner  425.00 SEK\n\nTotal  2,115.00 SEK\nof which VAT 12 %  226.61 SEK",
   "expected": {
     "judgments": {
-      "accommodation": true,
-      "food": true,
-      "alcohol": false,
-      "passenger_transport": false,
-      "customer_entertainment": false,
-      "multiple_types": true,
-      "category": "accommodation"
+      "lodging_charged": true,
+      "served_food_charged": true,
+      "alcohol_charged": false,
+      "transport_charged": false,
+      "goods_charged": false,
+      "hosted_guests": false,
+      "guests_named": false,
+      "purpose_fits_receipt": true,
+      "personal_items": false,
+      "receipt_kind": "itemised_receipt",
+      "purpose_detail": 2
     },
     "computed": {
       "saft_code": "0",
       "should_split": false,
       "foreign_purchase": true,
+      "kinds": [],
       "vat_rates_found": ["12"],
-      "category_check": "not_checked",
-      "needs_review": false,
-      "judgments_read": []
+      "needs_review": false
     }
   }
 }

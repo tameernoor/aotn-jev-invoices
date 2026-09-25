@@ -10,20 +10,24 @@
   "text_en": "Kontorlageret AS\nCompany no. 999 100 006 VAT\nReceipt 30019, 2026-09-11\n\n2 x USB-C charger 65 W  299.00  598.00\n1 x Notebook A5  89.00\n\nTotal  687.00\nof which VAT 25 %  137.40",
   "expected": {
     "judgments": {
-      "accommodation": false,
-      "food": false,
-      "alcohol": false,
-      "passenger_transport": false,
-      "customer_entertainment": false,
-      "multiple_types": false,
-      "category": "other"
+      "lodging_charged": false,
+      "served_food_charged": false,
+      "alcohol_charged": false,
+      "transport_charged": false,
+      "goods_charged": true,
+      "hosted_guests": false,
+      "guests_named": false,
+      "purpose_fits_receipt": true,
+      "personal_items": false,
+      "receipt_kind": "itemised_receipt",
+      "purpose_detail": 1
     },
     "computed": {
       "saft_code": "1",
       "should_split": false,
       "foreign_purchase": false,
+      "kinds": ["goods"],
       "vat_rates_found": ["25"],
-      "category_check": "agrees",
       "needs_review": false
     }
   }
