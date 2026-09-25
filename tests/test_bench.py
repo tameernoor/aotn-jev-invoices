@@ -1,6 +1,6 @@
 import json
 
-from fakes import answers
+from fakes import answers, level
 
 from jev_invoices.bench import SAMPLES_DIR, computed_check, load_samples, score, summarise
 
@@ -11,24 +11,62 @@ def test_score_uses_the_apps_thresholds_and_reports_uncertain_separately():
     assert result == {"correct": 2, "uncertain": ["food"], "misses": ["passenger_transport"], "total": 4}
 
 
+def test_score_scores_a_score_level_hit_and_miss():
+    judgments = answers(line_specificity=level(2))
+    hit = score(judgments, {"line_specificity": 2})
+    assert hit == {"correct": 1, "uncertain": [], "misses": [], "total": 1}
+
+    miss = score(judgments, {"line_specificity": 1})
+    assert miss == {"correct": 0, "uncertain": [], "misses": ["line_specificity"], "total": 1}
+
+
+def test_score_counts_a_low_confidence_choice_as_uncertain():
+    judgments = {"document_kind": {"type": "choice", "value": "invoice", "confidence": 0.4}}
+    result = score(judgments, {"document_kind": "invoice"})
+    assert result == {"correct": 0, "uncertain": ["document_kind"], "misses": [], "total": 1}
+
+
 def test_computed_check_runs_the_real_rules_and_reports_differences():
     sample = json.loads((SAMPLES_DIR / "expense" / "taxi.json").read_text(encoding="utf-8"))
     judgments = answers(
-        accommodation=0.05,
-        food=0.05,
-        alcohol=0.05,
-        passenger_transport=0.95,
-        customer_entertainment=0.05,
-        multiple_types=0.05,
-        category="passenger_transport",
+        lodging_charged=0.05,
+        served_food_charged=0.05,
+        alcohol_charged=0.05,
+        transport_charged=0.95,
+        goods_charged=0.05,
+        hosted_guests=0.05,
+        purpose_fits_receipt=0.95,
+        personal_items=0.05,
+        receipt_kind="itemised_receipt",
+        purpose_detail=level(1),
     )
     matching = computed_check("expense", sample["request"], judgments, sample["expected"]["computed"])
     assert matching == {"matches": True, "differences": {}}
 
-    judgments["multiple_types"] = {"type": "noul", "value": 0.5}
+    judgments["personal_items"] = {"type": "noul", "value": 0.95}
     mismatching = computed_check("expense", sample["request"], judgments, sample["expected"]["computed"])
     assert mismatching["matches"] is False
     assert mismatching["differences"] == {"needs_review": {"expected": False, "got": True}}
+
+
+def test_computed_check_runs_the_real_vendor_rules_and_reports_differences():
+    sample = json.loads((SAMPLES_DIR / "vendor" / "clean-invoice.json").read_text(encoding="utf-8"))
+    judgments = answers(
+        line_specificity=level(2),
+        po_items_billed=0.95,
+        unordered_items=0.05,
+        bank_change_request=0.05,
+        payment_pressure=0.05,
+        document_kind="invoice",
+        same_as_20877=0.05,
+    )
+    matching = computed_check("vendor", sample["request"], judgments, sample["expected"]["computed"])
+    assert matching == {"matches": True, "differences": {}}
+
+    judgments["bank_change_request"] = {"type": "noul", "value": 0.95}
+    mismatching = computed_check("vendor", sample["request"], judgments, sample["expected"]["computed"])
+    assert mismatching["matches"] is False
+    assert mismatching["differences"] == {"decision": {"expected": "approve", "got": "hold"}}
 
 
 def test_summarise_per_language():
@@ -80,5 +118,5 @@ def test_summarise_per_language():
 
 def test_load_samples_finds_both_kinds():
     kinds = [kind for kind, _ in load_samples()]
-    assert kinds.count("expense") == 6
-    assert kinds.count("vendor") == 4
+    assert kinds.count("expense") == 9
+    assert kinds.count("vendor") == 7

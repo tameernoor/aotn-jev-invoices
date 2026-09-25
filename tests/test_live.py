@@ -33,4 +33,4 @@ def test_taxi_sample_against_real_jev(tmp_path):
     assert set(record["judgments"]) == set(load_questions("expense"))
     assert record["jev"]["model"].startswith("jev-")
     assert record["jev"]["input_tokens"] > 0
-    assert record["jev"]["question_count"] == 8
+    assert record["jev"]["question_count"] == 11

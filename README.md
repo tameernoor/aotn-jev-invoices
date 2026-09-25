@@ -7,8 +7,41 @@ Jev, TypeSafe AI's System One model, answers narrow questions about an invoice. 
 ## What it shows
 
 - **One request per invoice.** Every question for an invoice goes to Jev in a single request. Jev reads the invoice once and answers all the questions in parallel on its side. Some answers turn out not to matter for a given invoice, and the code simply ignores them.
-- **Classifiers defined at runtime.** The questions live in `questions/expense.yaml` and `questions/vendor.yaml`. A new classifier is a new entry there, or an `extra_questions` field on a single request. Nothing is trained.
+- **Classifiers defined at runtime.** The questions live in `questions/expense.yaml` and `questions/vendor.yaml`. A new classifier is a new entry there, or an `extra_questions` field on a single request. Vendor invoices also get one generated question per earlier invoice, built from the request data rather than the YAML. Nothing is trained.
 - **Policy stays in code.** `src/jev_invoices/rules/` holds the VAT and approval rules as ordinary functions. Each record lists which answers the rules actually read, and only those can send an invoice to review.
+
+## The questions
+
+Each question targets one known expense or accounts-payable problem. Ids are never sent to the model, so each instruction carries the whole question; the rules in `src/jev_invoices/rules/` are the only code that reads an id.
+
+### Expense (`questions/expense.yaml`)
+
+| id | type | what it catches |
+|---|---|---|
+| `lodging_charged` | noul | A night of accommodation, billed at the low VAT rate. |
+| `served_food_charged` | noul | Restaurant meals, room service or minibar snacks, which get no VAT deduction. |
+| `alcohol_charged` | noul | Alcoholic drinks, treated the same as served food. |
+| `transport_charged` | noul | A taxi ride or travel ticket, billed at the low VAT rate, kept apart from parking or fuel. |
+| `goods_charged` | noul | Goods taken away, billed at the regular VAT rate. |
+| `hosted_guests` | noul | Customer entertainment (representasjon), which gets no VAT deduction. |
+| `guests_named` | noul | An entertainment claim that does not name who was hosted. |
+| `purpose_fits_receipt` | noul | A stated purpose that does not match what was actually bought. |
+| `personal_items` | noul | Private items, such as clothing or cosmetics, charged as a business expense. |
+| `receipt_kind` | choice | A document that is not valid proof of purchase, such as a card slip or a booking confirmation. |
+| `purpose_detail` | score | A purpose that is missing or too generic to justify the expense. |
+
+### Vendor (`questions/vendor.yaml`)
+
+| id | type | what it catches |
+|---|---|---|
+| `line_specificity` | score | Invoice lines too vague to check against the purchase order, such as "miscellaneous services". |
+| `po_items_billed` | noul | Lines that do not describe anything on the purchase order. |
+| `unordered_items` | noul | Charges for goods or services the purchase order never included. |
+| `bank_change_request` | noul | A request to pay a new or changed bank account. |
+| `payment_pressure` | noul | Urgent or threatening language pushing to skip the normal approval. |
+| `document_kind` | choice | A reminder, credit note or statement sent in as if it were a fresh invoice. |
+
+Vendor invoices also get one generated yes/no question per earlier invoice, asking whether it is the same delivery as invoice X; code builds these at request time from the earlier invoices sent with the request, and only reads the ones dated close enough to the invoice being judged.
 
 ## Run it
 

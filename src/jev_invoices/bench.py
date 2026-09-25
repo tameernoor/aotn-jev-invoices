@@ -13,10 +13,10 @@ from pathlib import Path
 
 from .jev import Jev
 from .models import ExpenseInvoiceIn, VendorInvoiceIn
-from .questions import load_questions
+from .questions import load_questions, vendor_request_questions
 from .rules.expense import apply_tax_rules
-from .rules.judgments import NO, YES
-from .rules.vendor import decide_vendor, exact_checks
+from .rules.judgments import CHOICE_MIN_CONFIDENCE, NO, YES
+from .rules.vendor import decide_vendor, exact_checks, recent_invoices
 
 SAMPLES_DIR = Path(__file__).resolve().parents[2] / "samples"
 OUT_FILE = Path("out/bench.json")
@@ -32,31 +32,43 @@ def load_samples(directory: Path = SAMPLES_DIR) -> list[tuple[str, dict]]:
 
 
 def score(judgments: dict, expected: dict) -> dict:
-    """Score judgments at the app's own thresholds (YES/NO from rules.judgments).
+    """Score judgments at the app's own thresholds.
 
-    An expected-true noul is correct only if its value is >= YES, an expected-false
-    noul only if its value is <= NO. A value strictly between NO and YES is uncertain,
-    neither correct nor a miss. Choices compare by equality.
+    A noul (bool expected) is correct only if its value is >= YES when the expectation is
+    true, or <= NO when it is false; a value strictly between NO and YES is uncertain,
+    neither correct nor a miss. A choice (str expected) is correct on an exact match; one
+    read with confidence below CHOICE_MIN_CONFIDENCE counts as uncertain instead, whatever
+    its value. A score level (int expected) is correct when its value is within 0.5 of the
+    level, otherwise a miss; levels are never uncertain. Booleans are checked before ints,
+    since bool is a subtype of int in Python.
     """
     correct = 0
     uncertain = []
     misses = []
     for qid, want in expected.items():
-        got = judgments[qid]["value"]
-        if isinstance(want, str):
-            if got == want:
+        answer = judgments[qid]
+        if isinstance(want, bool):
+            value = answer["value"]
+            hit = value >= YES if want else value <= NO
+            miss = value <= NO if want else value >= YES
+            if hit:
+                correct += 1
+            elif miss:
+                misses.append(qid)
+            else:
+                uncertain.append(qid)
+        elif isinstance(want, str):
+            if answer.get("confidence", 1.0) < CHOICE_MIN_CONFIDENCE:
+                uncertain.append(qid)
+            elif answer["value"] == want:
                 correct += 1
             else:
                 misses.append(qid)
-            continue
-        hit = got >= YES if want else got <= NO
-        miss = got <= NO if want else got >= YES
-        if hit:
-            correct += 1
-        elif miss:
-            misses.append(qid)
-        else:
-            uncertain.append(qid)
+        else:  # int: a score level
+            if abs(answer["value"] - want) < 0.5:
+                correct += 1
+            else:
+                misses.append(qid)
     return {"correct": correct, "uncertain": uncertain, "misses": misses, "total": len(expected)}
 
 
@@ -71,16 +83,17 @@ def computed_check(kind: str, request_body: dict, judgments: dict, expected_comp
             vendor_country=body.vendor_country,
         )
     else:
+        earlier = [e.model_dump() for e in body.earlier_invoices]
         checks = exact_checks(
             invoice_number=body.invoice_number,
             amount=body.amount,
-            invoice_date=body.invoice_date,
             bank_account=body.bank_account,
             bank_account_on_file=body.vendor.bank_account_on_file,
             po_total=body.purchase_order.total,
-            earlier_invoices=[e.model_dump() for e in body.earlier_invoices],
+            earlier_invoices=earlier,
         )
-        computed = decide_vendor(judgments, checks)
+        recent = recent_invoices(body.invoice_date, earlier)
+        computed = decide_vendor(judgments, checks, recent)
 
     differences = {
         key: {"expected": want, "got": computed.get(key)}
@@ -110,7 +123,8 @@ def summarise(rows: list[dict]) -> dict[str, dict]:
 
 async def run() -> list[dict]:
     jev = Jev()
-    questions = {kind: load_questions(kind) for kind in REQUEST_MODELS}
+    expense_questions = load_questions("expense")
+    vendor_questions = load_questions("vendor")
     rows = []
     try:
         for kind, sample in load_samples():
@@ -119,7 +133,13 @@ async def run() -> list[dict]:
                 if lang == "en":
                     request["invoice_text"] = sample["text_en"]
                 body = REQUEST_MODELS[kind].model_validate(request)
-                result = await jev.ask(body.state(), questions[kind])
+                if kind == "expense":
+                    questions = expense_questions
+                else:
+                    questions = vendor_request_questions(
+                        vendor_questions, [e.model_dump() for e in body.earlier_invoices]
+                    )
+                result = await jev.ask(body.state(), questions)
                 rows.append(
                     {
                         "sample": sample["name"],
