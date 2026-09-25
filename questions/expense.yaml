@@ -34,7 +34,7 @@ transport_charged:
 
 goods_charged:
   type: noul
-  instructions: Does `invoice_text` charge for goods to take away, such as equipment, office supplies or groceries?
+  instructions: Does `invoice_text` charge for goods to take away, such as equipment or office supplies?
   criteria:
     "true": At least one line is an item the buyer takes away.
     "false": No such item is charged. Food and drinks consumed on the spot, including the minibar, count as no.
@@ -67,7 +67,7 @@ personal_items:
   instructions: Does `invoice_text` charge for at least one item for private use?
   criteria:
     "true": At least one line is clothing, shoes, cosmetics, perfume, toiletries, jewellery, toys, or films or other entertainment for the traveller.
-    "false": Every line is for the work or the trip, such as meals, lodging, transport, office supplies or work equipment.
+    "false": No line is on that list.
 
 receipt_kind:
   type: choice
@@ -84,6 +84,6 @@ purpose_detail:
   type: score
   instructions: How specific is `expense_purpose` about the work this expense was for?
   criteria:
-    - Missing or generic, such as "meeting", "work" or "travel".
-    - Names the kind of work, such as a meeting, course, fair, customer dinner or trip home.
+    - Missing, or a single generic word with no subject, such as "meeting", "work" or "travel".
+    - Names what kind of work it was, such as "project meeting", "sales course", "customer dinner" or "trip home from a conference".
     - Names the specific event, project, place or people, such as "contract law course in Oslo" or "dinner with Hansen from Acme AS".

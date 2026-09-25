@@ -64,7 +64,7 @@ DUPLICATE_QUESTION = (
     "or the same period, as `earlier_invoice`?"
 )
 DUPLICATE_CRITERIA = {
-    "true": "The same items from the same delivery or period appear on `earlier_invoice`, for example the same delivery date or the same delivery note.",
+    "true": "The same items from the same delivery or period appear on `earlier_invoice`, for example the same delivery date or the same delivery note, or `invoice_text` refers to `earlier_invoice` by its invoice number.",
     "false": "The items are different, or they come from a different delivery or period. If neither text names a delivery date, delivery note or period, answer no.",
 }
 

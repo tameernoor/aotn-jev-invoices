@@ -4,7 +4,7 @@
 
 line_specificity:
   type: score
-  instructions: How specifically do the lines in `invoice_text` describe what was delivered? Judge the least specific line that charges money.
+  instructions: How specifically do the lines in `invoice_text` describe what was delivered? Judge the least specific line that charges for goods or services. Ignore freight, invoice fees, environmental fees and rounding lines.
   criteria:
     - Generic, such as "services", "consulting" or "miscellaneous", without saying what was done or delivered.
     - Names the kind of goods or service, but not the items, quantities or work done.
@@ -15,7 +15,7 @@ po_items_billed:
   instructions: Do the lines in `invoice_text` charge for goods or services described in `purchase_order`? Judge the descriptions only, not quantities, prices or totals.
   criteria:
     "true": The lines name goods or services from `purchase_order`. Billing only some of the ordered items counts as yes.
-    "false": The lines name goods or services that are not in `purchase_order`.
+    "false": None of the lines name goods or services from `purchase_order`.
 
 unordered_items:
   type: noul
