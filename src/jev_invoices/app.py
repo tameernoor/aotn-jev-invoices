@@ -20,9 +20,9 @@ from .models import (
     VendorComputed,
     VendorInvoiceIn,
 )
-from .questions import QuestionCollision, load_questions, merge_questions
+from .questions import QuestionCollision, load_questions, merge_questions, vendor_request_questions
 from .rules.expense import apply_tax_rules
-from .rules.vendor import decide_vendor, exact_checks
+from .rules.vendor import decide_vendor, exact_checks, recent_invoices
 from .store import Store
 
 
@@ -89,17 +89,19 @@ def create_app(ask: AskFn | None = None, store: Store | None = None) -> FastAPI:
 
     @app.post("/vendor-invoices", response_model=InvoiceRecord)
     async def post_vendor_invoice(body: VendorInvoiceIn) -> InvoiceRecord:
-        result = await judge(body.state(), vendor_questions, body.extra_questions)
+        earlier = [e.model_dump() for e in body.earlier_invoices]
+        base = vendor_request_questions(vendor_questions, earlier)
+        result = await judge(body.state(), base, body.extra_questions)
         checks = exact_checks(
             invoice_number=body.invoice_number,
             amount=body.amount,
-            invoice_date=body.invoice_date,
             bank_account=body.bank_account,
             bank_account_on_file=body.vendor.bank_account_on_file,
             po_total=body.purchase_order.total,
-            earlier_invoices=[e.model_dump() for e in body.earlier_invoices],
+            earlier_invoices=earlier,
         )
-        computed = decide_vendor(result.judgments, checks)
+        recent = recent_invoices(body.invoice_date, earlier)
+        computed = decide_vendor(result.judgments, checks, recent)
         return save("vendor", body, result, VendorComputed(**computed))
 
     @app.get("/invoices", response_model=list[InvoiceRecord])

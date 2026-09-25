@@ -26,23 +26,23 @@ def make_client(tmp_path):
 
 
 def test_expense_invoice_is_judged_in_one_call_coded_and_saved(make_client, tmp_path):
-    fake = FakeJev({"passenger_transport": 0.95, "category": "passenger_transport"})
+    fake = FakeJev({"transport_charged": 0.95, "purpose_fits_receipt": 0.95})
     response = make_client(fake).post("/expense-invoices", json=TAXI)
 
     assert response.status_code == 200
     record = response.json()
     assert len(fake.calls) == 1
-    assert len(fake.calls[0]["questions"]) == 8
+    assert len(fake.calls[0]["questions"]) == 11
     assert fake.calls[0]["state"]["invoice_text"] == TAXI["invoice_text"]
     assert record["kind"] == "expense"
     assert record["computed"]["saft_code"] == "13"
     assert record["computed"]["vat_rates_found"] == ["12"]
-    assert record["jev"]["question_count"] == 8
+    assert record["jev"]["question_count"] == 11
     assert (tmp_path / "out" / f"{record['id']}.json").exists()
 
 
 def test_extra_question_is_answered_in_the_same_call_and_ignored_by_the_rules(make_client):
-    fake = FakeJev({"passenger_transport": 0.95, "category": "passenger_transport", "night_trip": 0.9})
+    fake = FakeJev({"transport_charged": 0.95, "purpose_fits_receipt": 0.95, "night_trip": 0.9})
     body = {**TAXI, "extra_questions": {"night_trip": {"type": "noul", "instructions": "Was this a night trip?"}}}
     record = make_client(fake).post("/expense-invoices", json=body).json()
 
@@ -56,10 +56,10 @@ def test_extra_question_is_answered_in_the_same_call_and_ignored_by_the_rules(ma
 
 
 def test_extra_question_reusing_a_builtin_id_is_422(make_client):
-    body = {**TAXI, "extra_questions": {"alcohol": {"type": "noul", "instructions": "Beer?"}}}
+    body = {**TAXI, "extra_questions": {"alcohol_charged": {"type": "noul", "instructions": "Beer?"}}}
     response = make_client(FakeJev()).post("/expense-invoices", json=body)
     assert response.status_code == 422
-    assert "alcohol" in response.json()["detail"]
+    assert "alcohol_charged" in response.json()["detail"]
 
 
 @pytest.mark.parametrize(
@@ -89,15 +89,23 @@ def test_jev_down_is_502_and_nothing_is_saved(make_client):
 
 
 def test_vendor_invoice_is_decided(make_client):
-    fake = FakeJev({"lines_describe_po": 0.95})
+    fake = FakeJev({"po_items_billed": 0.95})
     record = make_client(fake).post("/vendor-invoices", json=VENDOR_BODY).json()
     assert record["kind"] == "vendor"
     assert record["computed"]["decision"] == "approve"
-    assert set(fake.calls[0]["state"]) == {"invoice_text", "purchase_order", "earlier_invoices"}
+    assert "same_as_20877" in fake.calls[0]["questions"]
+    assert set(fake.calls[0]["state"]) == {"invoice_text", "purchase_order"}
+
+
+def test_extra_question_colliding_with_a_generated_duplicate_id_is_422(make_client):
+    body = {**VENDOR_BODY, "extra_questions": {"same_as_20877": {"type": "noul", "instructions": "Same delivery?"}}}
+    response = make_client(FakeJev()).post("/vendor-invoices", json=body)
+    assert response.status_code == 422
+    assert "same_as_20877" in response.json()["detail"]
 
 
 def test_records_can_be_listed_and_fetched(make_client):
-    client = make_client(FakeJev({"passenger_transport": 0.95, "category": "passenger_transport"}))
+    client = make_client(FakeJev({"transport_charged": 0.95, "purpose_fits_receipt": 0.95}))
     first = client.post("/expense-invoices", json=TAXI).json()
     second = client.post("/expense-invoices", json=TAXI).json()
     assert [r["id"] for r in client.get("/invoices").json()] == [second["id"], first["id"]]
