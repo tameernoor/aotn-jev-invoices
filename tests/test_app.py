@@ -104,6 +104,31 @@ def test_extra_question_colliding_with_a_generated_duplicate_id_is_422(make_clie
     assert "same_as_20877" in response.json()["detail"]
 
 
+def test_in_window_duplicate_answer_sends_the_invoice_to_review(make_client):
+    # earlier invoice 20877 is dated 2026-08-12, 31 days before VENDOR_BODY's 2026-09-12: inside the window.
+    fake = FakeJev({"po_items_billed": 0.95, "same_as_20877": 0.95})
+    record = make_client(fake).post("/vendor-invoices", json=VENDOR_BODY).json()
+    assert record["computed"]["decision"] == "review"
+    assert any("20877" in reason for reason in record["computed"]["reasons"])
+
+
+def test_out_of_window_duplicate_answer_is_not_read_and_approves(make_client):
+    body = {
+        **VENDOR_BODY,
+        "earlier_invoices": [{**VENDOR_BODY["earlier_invoices"][0], "invoice_date": "2026-07-01"}],
+    }
+    fake = FakeJev({"po_items_billed": 0.95, "same_as_20877": 0.95})
+    record = make_client(fake).post("/vendor-invoices", json=body).json()
+    assert record["computed"]["decision"] == "approve"
+    assert "same_as_20877" not in record["computed"]["judgments_read"]
+
+
+def test_vendor_jev_down_is_502_and_nothing_is_saved(make_client):
+    client = make_client(FakeJev(error=JevUnavailable("down")))
+    assert client.post("/vendor-invoices", json=VENDOR_BODY).status_code == 502
+    assert client.get("/invoices").json() == []
+
+
 def test_records_can_be_listed_and_fetched(make_client):
     client = make_client(FakeJev({"transport_charged": 0.95, "purpose_fits_receipt": 0.95}))
     first = client.post("/expense-invoices", json=TAXI).json()
