@@ -138,7 +138,7 @@ Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `
 uv run --env-file .env python -m jev_invoices.bench
 ```
 
-Runs every sample with its Norwegian text and with an English translation, and writes `out/bench.json`. It scores Jev's answers at the app's own thresholds, reports uncertain answers separately from misses, and checks every value in each sample's expected computed result against the rules' output, not only `needs_review`, `totals_by_code` or `decision`; when comparing, line text is ignored, so the English run is judged on category, amount and code. TypeSafe says English is where Jev is most accurate, so this shows how much Norwegian costs.
+Runs every sample with its Norwegian text and with an English translation, and writes `out/bench.json`. It scores Jev's answers at the app's own thresholds, reports uncertain answers separately from misses, and checks every value in each sample's expected computed result against the rules' output, not only `needs_review`, `totals_by_code` or `decision`; when comparing, line text is ignored, so the English run is judged on category, amount and code. TypeSafe says English is where Jev is most accurate, so this shows how much Norwegian costs. Pass an optional samples folder, e.g. `uv run --env-file .env python -m jev_invoices.bench samples/holdout`, to bench only that folder's `expense` and `vendor` samples and write to `out/bench-<folder name>.json` instead.
 
 ## Tests
 

@@ -1,8 +1,18 @@
 import json
+from pathlib import Path
 
 from fakes import answers, level
 
-from jev_invoices.bench import SAMPLES_DIR, computed_check, load_samples, score, summarise, to_json
+from jev_invoices.bench import (
+    OUT_FILE,
+    SAMPLES_DIR,
+    computed_check,
+    load_samples,
+    out_file_for,
+    score,
+    summarise,
+    to_json,
+)
 
 
 def test_score_uses_the_apps_thresholds_and_reports_uncertain_separately():
@@ -142,6 +152,25 @@ def test_load_samples_finds_both_kinds():
     kinds = [kind for kind, _ in load_samples()]
     assert kinds.count("expense") == 9
     assert kinds.count("vendor") == 7
+
+
+def test_load_samples_reads_expense_and_vendor_json_from_a_given_directory(tmp_path):
+    (tmp_path / "expense").mkdir()
+    (tmp_path / "vendor").mkdir()
+    (tmp_path / "expense" / "one.json").write_text(json.dumps({"name": "one"}), encoding="utf-8")
+    (tmp_path / "vendor" / "two.json").write_text(json.dumps({"name": "two"}), encoding="utf-8")
+
+    result = load_samples(tmp_path)
+
+    assert result == [("expense", {"name": "one"}), ("vendor", {"name": "two"})]
+
+
+def test_out_file_for_default_samples_dir_is_the_plain_out_file():
+    assert out_file_for(SAMPLES_DIR) == OUT_FILE
+
+
+def test_out_file_for_another_folder_is_named_after_it():
+    assert out_file_for(SAMPLES_DIR.parent / "samples" / "holdout") == Path("out/bench-holdout.json")
 
 
 def test_a_row_with_a_totals_by_code_mismatch_serialises_to_json():

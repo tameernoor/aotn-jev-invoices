@@ -5,10 +5,15 @@ translation, scores the answers at the app's own thresholds, and checks the rule
 output against each sample's expected result.
 
     uv run --env-file .env python -m jev_invoices.bench
+
+Pass a folder to bench only its samples, e.g. `samples/holdout` for
+`samples/holdout/expense` and `samples/holdout/vendor`, writing to
+`out/bench-holdout.json` instead of the default `out/bench.json`.
 """
 
 import asyncio
 import json
+import sys
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
@@ -30,6 +35,14 @@ def load_samples(directory: Path = SAMPLES_DIR) -> list[tuple[str, dict]]:
         for kind in ("expense", "vendor")
         for path in sorted((directory / kind).glob("*.json"))
     ]
+
+
+def out_file_for(directory: Path) -> Path:
+    """out/bench.json for the default samples directory, out/bench-<folder name>.json for
+    any other one."""
+    if directory == SAMPLES_DIR:
+        return OUT_FILE
+    return Path(f"out/bench-{directory.name}.json")
 
 
 def score(judgments: dict, expected: dict) -> dict:
@@ -162,13 +175,13 @@ def summarise(rows: list[dict]) -> dict[str, dict]:
     return summary
 
 
-async def run() -> list[dict]:
+async def run(directory: Path = SAMPLES_DIR) -> list[dict]:
     jev = Jev()
     expense_questions = load_questions("expense")
     vendor_questions = load_questions("vendor")
     rows = []
     try:
-        for kind, sample in load_samples():
+        for kind, sample in load_samples(directory):
             for lang in ("no", "en"):
                 request = dict(sample["request"])
                 if lang == "en":
@@ -204,17 +217,19 @@ async def run() -> list[dict]:
 
 
 def to_json(summary: dict, rows: list[dict]) -> str:
-    """The exact serialisation main() writes to OUT_FILE, pulled out so it can be tested
+    """The exact serialisation main() writes to its output file, pulled out so it can be tested
     without a real Jev call. Every value reaching here must already be JSON-safe;
     computed_check() is what keeps Decimal amounts out of `rows`."""
     return json.dumps({"summary": summary, "rows": rows}, indent=2, ensure_ascii=False)
 
 
 def main() -> None:
-    rows = asyncio.run(run())
+    directory = Path(sys.argv[1]) if len(sys.argv) > 1 else SAMPLES_DIR
+    out_file = out_file_for(directory)
+    rows = asyncio.run(run(directory))
     summary = summarise(rows)
-    OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    OUT_FILE.write_text(to_json(summary, rows), encoding="utf-8")
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    out_file.write_text(to_json(summary, rows), encoding="utf-8")
     for lang, s in summary.items():
         print(
             f"{lang}: {s['correct']}/{s['total']} correct, {s['uncertain']} uncertain, {s['misses']} missed, "
@@ -232,7 +247,7 @@ def main() -> None:
             problems.append(f"computed differs: {', '.join(row['computed']['differences'])}")
         if problems:
             print(f"  {row['lang']} {row['sample']}: {'; '.join(problems)}")
-    print(f"Saved to {OUT_FILE}")
+    print(f"Saved to {out_file}")
 
 
 if __name__ == "__main__":
