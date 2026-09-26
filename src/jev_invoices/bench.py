@@ -9,11 +9,12 @@ output against each sample's expected result.
 
 import asyncio
 import json
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 from .jev import Jev
 from .models import ExpenseInvoiceIn, VendorInvoiceIn
-from .questions import load_questions, vendor_request_questions
+from .questions import expense_request_questions, load_questions, vendor_request_questions
 from .rules.expense import apply_tax_rules
 from .rules.judgments import CHOICE_MIN_CONFIDENCE, NO, YES
 from .rules.vendor import decide_vendor, exact_checks, recent_invoices
@@ -73,12 +74,32 @@ def score(judgments: dict, expected: dict) -> dict:
     return {"correct": correct, "uncertain": uncertain, "misses": misses, "total": len(expected)}
 
 
+def _decimal_safe(value):
+    """Recursively canonicalise Decimal amounts and decimal-shaped strings to str(Decimal(x)),
+    so a JSON-loaded expected value (amounts as strings) and a real Decimal from the rules
+    compare equal regardless of which side they came from."""
+    if isinstance(value, Decimal):
+        return str(value)
+    if isinstance(value, str):
+        try:
+            return str(Decimal(value))
+        except InvalidOperation:
+            return value
+    if isinstance(value, dict):
+        return {k: _decimal_safe(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_decimal_safe(v) for v in value]
+    return value
+
+
 def computed_check(kind: str, request_body: dict, judgments: dict, expected_computed: dict) -> dict:
     """Run the real rules on the real judgments, with the same arguments app.py passes."""
     body = REQUEST_MODELS[kind].model_validate(request_body)
     if kind == "expense":
+        lines = [line.model_dump() for line in body.lines]
         computed = apply_tax_rules(
             judgments,
+            lines=lines,
             invoice_text=body.invoice_text,
             employee_country=body.employee_country,
             vendor_country=body.vendor_country,
@@ -99,7 +120,7 @@ def computed_check(kind: str, request_body: dict, judgments: dict, expected_comp
     differences = {
         key: {"expected": want, "got": computed.get(key)}
         for key, want in expected_computed.items()
-        if computed.get(key) != want
+        if _decimal_safe(computed.get(key)) != _decimal_safe(want)
     }
     return {"matches": not differences, "differences": differences}
 
@@ -133,9 +154,13 @@ async def run() -> list[dict]:
                 request = dict(sample["request"])
                 if lang == "en":
                     request["invoice_text"] = sample["text_en"]
+                    if kind == "expense":
+                        request["lines"] = sample["lines_en"]
                 body = REQUEST_MODELS[kind].model_validate(request)
                 if kind == "expense":
-                    questions = expense_questions
+                    questions = expense_request_questions(
+                        expense_questions, [line.model_dump() for line in body.lines]
+                    )
                 else:
                     earlier = [e.model_dump() for e in body.earlier_invoices]
                     recent = recent_invoices(body.invoice_date, earlier)

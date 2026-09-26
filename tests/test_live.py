@@ -11,7 +11,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from jev_invoices.app import create_app
-from jev_invoices.questions import load_questions
+from jev_invoices.questions import expense_request_questions, load_questions
 from jev_invoices.store import Store
 
 pytestmark = [
@@ -30,7 +30,8 @@ def test_taxi_sample_against_real_jev(tmp_path):
 
     assert response.status_code == 200, response.text
     record = response.json()
-    assert set(record["judgments"]) == set(load_questions("expense"))
+    expected_questions = expense_request_questions(load_questions("expense"), sample["request"]["lines"])
+    assert set(record["judgments"]) == set(expected_questions)
     assert record["jev"]["model"].startswith("jev-")
     assert record["jev"]["input_tokens"] > 0
-    assert record["jev"]["question_count"] == 11
+    assert record["jev"]["question_count"] == 5 + len(sample["request"]["lines"])

@@ -20,7 +20,13 @@ from .models import (
     VendorComputed,
     VendorInvoiceIn,
 )
-from .questions import QuestionCollision, load_questions, merge_questions, vendor_request_questions
+from .questions import (
+    QuestionCollision,
+    expense_request_questions,
+    load_questions,
+    merge_questions,
+    vendor_request_questions,
+)
 from .rules.expense import apply_tax_rules
 from .rules.vendor import decide_vendor, exact_checks, recent_invoices
 from .store import Store
@@ -78,9 +84,12 @@ def create_app(ask: AskFn | None = None, store: Store | None = None) -> FastAPI:
 
     @app.post("/expense-invoices", response_model=InvoiceRecord)
     async def post_expense_invoice(body: ExpenseInvoiceIn) -> InvoiceRecord:
-        result = await judge(body.state(), expense_questions, body.extra_questions)
+        lines = [line.model_dump() for line in body.lines]
+        base = expense_request_questions(expense_questions, lines)
+        result = await judge(body.state(), base, body.extra_questions)
         computed = apply_tax_rules(
             result.judgments,
+            lines=lines,
             invoice_text=body.invoice_text,
             employee_country=body.employee_country,
             vendor_country=body.vendor_country,

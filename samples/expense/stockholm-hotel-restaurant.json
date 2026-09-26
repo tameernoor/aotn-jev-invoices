@@ -1,33 +1,38 @@
 {
   "name": "stockholm-hotel-restaurant",
-  "note": "Swedish hotel with dinner on the bill. Foreign vendor decides the code, so none of Jev's kind answers are read.",
+  "note": "Swedish hotel with dinner on the bill. Foreign vendor codes every line \"0\", though the line answers are still read to catch a private item.",
   "request": {
     "invoice_text": "Hotell Nordkajen AB\nOrg.nr 556000-0002\nKvitto 7781, 15.09.2026\nGäst: Kari Nordmann\n\nRum, 1 natt  1 690,00 SEK\nRestaurang, middag  425,00 SEK\n\nSumma  2 115,00 SEK\nVarav moms 12 %  226,61 SEK",
+    "lines": [
+      {"text": "Rum, 1 natt", "amount": "1690.00"},
+      {"text": "Restaurang, middag", "amount": "425.00"}
+    ],
     "employee_country": "NO",
     "vendor_country": "SE",
     "expense_purpose": "Tjenestereise til Stockholm, messen Fjordlogistikk 2026"
   },
   "text_en": "Hotell Nordkajen AB\nCompany no. 556000-0002\nReceipt 7781, 2026-09-15\nGuest: Kari Nordmann\n\nRoom, 1 night  1,690.00 SEK\nRestaurant, dinner  425.00 SEK\n\nTotal  2,115.00 SEK\nof which VAT 12 %  226.61 SEK",
+  "lines_en": [
+    {"text": "Room, 1 night", "amount": "1690.00"},
+    {"text": "Restaurant, dinner", "amount": "425.00"}
+  ],
   "expected": {
     "judgments": {
-      "lodging_charged": true,
-      "served_food_charged": true,
-      "alcohol_charged": false,
-      "transport_charged": false,
-      "goods_charged": false,
       "hosted_guests": false,
       "guests_named": false,
       "purpose_fits_receipt": true,
-      "personal_items": false,
       "receipt_kind": "proof_of_purchase",
-      "purpose_detail": 2
+      "purpose_detail": 2,
+      "line_1": "lodging",
+      "line_2": "served_food"
     },
     "computed": {
-      "saft_code": "0",
-      "should_split": false,
       "foreign_purchase": true,
-      "kinds": [],
-      "vat_rates_found": ["12"],
+      "lines": [
+        {"text": "Rum, 1 natt", "amount": "1690.00", "category": "lodging", "saft_code": "0"},
+        {"text": "Restaurang, middag", "amount": "425.00", "category": "served_food", "saft_code": "0"}
+      ],
+      "totals_by_code": {"0": "2115.00"},
       "needs_review": false
     }
   }

@@ -55,21 +55,17 @@ def test_score_counts_a_low_confidence_choice_as_uncertain():
 def test_computed_check_runs_the_real_rules_and_reports_differences():
     sample = json.loads((SAMPLES_DIR / "expense" / "taxi.json").read_text(encoding="utf-8"))
     judgments = answers(
-        lodging_charged=0.05,
-        served_food_charged=0.05,
-        alcohol_charged=0.05,
-        transport_charged=0.95,
-        goods_charged=0.05,
         hosted_guests=0.05,
+        guests_named=0.05,
         purpose_fits_receipt=0.95,
-        personal_items=0.05,
         receipt_kind="proof_of_purchase",
         purpose_detail=level(1),
+        line_1="transport",
     )
     matching = computed_check("expense", sample["request"], judgments, sample["expected"]["computed"])
     assert matching == {"matches": True, "differences": {}}
 
-    judgments["personal_items"] = {"type": "noul", "value": 0.95}
+    judgments["purpose_fits_receipt"] = {"type": "noul", "value": 0.05}
     mismatching = computed_check("expense", sample["request"], judgments, sample["expected"]["computed"])
     assert mismatching["matches"] is False
     assert mismatching["differences"] == {"needs_review": {"expected": False, "got": True}}

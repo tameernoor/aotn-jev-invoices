@@ -3,31 +3,40 @@
   "note": "Restaurant dinner with two named customers and wine. Entertainment, no deduction.",
   "request": {
     "invoice_text": "Restaurant Kveldsglimt AS\nOrg.nr 999 100 002 MVA\nBord 12, 08.09.2026 kl. 19:40\n\n3 x Hovedrett torsk  395,00  1 185,00\n1 x Flaske hvitvin, Chablis  890,00\n3 x Kaffe  45,00  135,00\n\nTotalt  2 210,00\nHerav mva 25 %  442,00",
+    "lines": [
+      {"text": "Hovedrett torsk", "amount": "1185.00"},
+      {"text": "Flaske hvitvin, Chablis", "amount": "890.00"},
+      {"text": "Kaffe", "amount": "135.00"}
+    ],
     "employee_country": "NO",
     "vendor_country": "NO",
     "expense_purpose": "Middag med Kari Hansen og Ola Berg fra Sølvtind Rør AS etter forhandlinger om ny serviceavtale"
   },
   "text_en": "Restaurant Kveldsglimt AS\nCompany no. 999 100 002 VAT\nTable 12, 2026-09-08 at 19:40\n\n3 x Main course, cod  395.00  1,185.00\n1 x Bottle of white wine, Chablis  890.00\n3 x Coffee  45.00  135.00\n\nTotal  2,210.00\nof which VAT 25 %  442.00",
+  "lines_en": [
+    {"text": "Main course, cod", "amount": "1185.00"},
+    {"text": "Bottle of white wine, Chablis", "amount": "890.00"},
+    {"text": "Coffee", "amount": "135.00"}
+  ],
   "expected": {
     "judgments": {
-      "lodging_charged": false,
-      "served_food_charged": true,
-      "alcohol_charged": true,
-      "transport_charged": false,
-      "goods_charged": false,
       "hosted_guests": true,
       "guests_named": true,
       "purpose_fits_receipt": true,
-      "personal_items": false,
       "receipt_kind": "proof_of_purchase",
-      "purpose_detail": 2
+      "purpose_detail": 2,
+      "line_1": "served_food",
+      "line_2": "alcohol",
+      "line_3": "served_food"
     },
     "computed": {
-      "saft_code": "0",
-      "should_split": false,
       "foreign_purchase": false,
-      "kinds": ["food_and_drink"],
-      "vat_rates_found": ["25"],
+      "lines": [
+        {"text": "Hovedrett torsk", "amount": "1185.00", "category": "served_food", "saft_code": "0"},
+        {"text": "Flaske hvitvin, Chablis", "amount": "890.00", "category": "alcohol", "saft_code": "0"},
+        {"text": "Kaffe", "amount": "135.00", "category": "served_food", "saft_code": "0"}
+      ],
+      "totals_by_code": {"0": "2210.00"},
       "needs_review": false
     }
   }

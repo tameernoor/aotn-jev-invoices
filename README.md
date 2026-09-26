@@ -7,7 +7,7 @@ Jev, TypeSafe AI's System One model, answers narrow questions about an invoice. 
 ## What it shows
 
 - **One request per invoice.** Every question for an invoice goes to Jev in a single request. Jev reads the invoice once and answers all the questions in parallel on its side. Some answers turn out not to matter for a given invoice, and the code simply ignores them.
-- **Classifiers defined at runtime.** The questions live in `questions/expense.yaml` and `questions/vendor.yaml`. A new classifier is a new entry there, or an `extra_questions` field on a single request. Vendor invoices also get one generated question per earlier invoice, built from the request data rather than the YAML. Nothing is trained.
+- **Classifiers defined at runtime.** The questions live in `questions/expense.yaml` and `questions/vendor.yaml`. A new classifier is a new entry there, or an `extra_questions` field on a single request. Vendor invoices also get one generated question per earlier invoice, built from the request data rather than the YAML; expense invoices get one generated choice question per receipt line, built from the lines in the request. Nothing is trained.
 - **Policy stays in code.** `src/jev_invoices/rules/` holds the VAT and approval rules as ordinary functions. Each record lists which answers the rules actually read, and only those can send an invoice to review.
 
 ## The questions
@@ -18,17 +18,24 @@ Each question targets one known expense or accounts-payable problem. Ids are nev
 
 | id | type | what it catches |
 |---|---|---|
-| `lodging_charged` | noul | A night of accommodation, billed at the low VAT rate. |
-| `served_food_charged` | noul | Restaurant meals, room service or minibar snacks, which get no VAT deduction. |
-| `alcohol_charged` | noul | Alcoholic drinks, treated the same as served food. |
-| `transport_charged` | noul | A taxi ride or travel ticket, billed at the low VAT rate, kept apart from parking or fuel. |
-| `goods_charged` | noul | Goods taken away, billed at the regular VAT rate. |
 | `hosted_guests` | noul | Customer entertainment (representasjon), whose guests must then be named. A meal with guests gets the same VAT code as any served meal; only the reason differs. |
 | `guests_named` | noul | An entertainment claim that does not name who was hosted. |
 | `purpose_fits_receipt` | noul | A stated purpose that does not match what was actually bought. |
-| `personal_items` | noul | Private items, such as clothing or cosmetics, charged as a business expense. |
 | `receipt_kind` | choice | A document that is not valid proof of purchase, such as a card slip or a booking confirmation. |
 | `purpose_detail` | score | A purpose that is missing or too generic to justify the expense. |
+
+What was bought is not asked at invoice level. Each line in the request gets its own generated choice question, and the rules turn that choice into a VAT code or an effect:
+
+| category | VAT code or effect |
+|---|---|
+| `lodging` | 13, the low rate |
+| `transport` | 13, the low rate |
+| `served_food` | 0, no deduction |
+| `alcohol` | 0, no deduction |
+| `goods` | 1, the regular rate |
+| `other_cost` | no code, code it by hand |
+| `private_item` | no code, sent to review |
+| `unclear` | no code, sent to review |
 
 ### Vendor (`questions/vendor.yaml`)
 
@@ -82,7 +89,7 @@ Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `
 uv run --env-file .env python -m jev_invoices.bench
 ```
 
-Runs every sample with its Norwegian text and with an English translation, and writes `out/bench.json`. It scores Jev's answers at the app's own thresholds, reports uncertain answers separately from misses, and checks every value in each sample's expected computed result against the rules' output, not only `needs_review`, `saft_code` or `decision`. On the card-slip sample, Jev can infer served food from the shop's name, so that sample's computed values can differ from the literal expectation. TypeSafe says English is where Jev is most accurate, so this shows how much Norwegian costs.
+Runs every sample with its Norwegian text and with an English translation, and writes `out/bench.json`. It scores Jev's answers at the app's own thresholds, reports uncertain answers separately from misses, and checks every value in each sample's expected computed result against the rules' output, not only `needs_review`, `totals_by_code` or `decision`. On the card-slip sample, Jev can infer served food from the shop's name, so that sample's computed values can differ from the literal expectation. TypeSafe says English is where Jev is most accurate, so this shows how much Norwegian costs.
 
 ## Tests
 

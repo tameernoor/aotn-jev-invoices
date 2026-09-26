@@ -3,31 +3,32 @@
   "note": "Train ticket. Passenger transport at the low rate.",
   "request": {
     "invoice_text": "Togselskapet Nord AS\nOrg.nr 999 100 005 MVA\nBillett 8812-4471\nOslo S – Lillehammer, 10.09.2026 kl. 08:02\n1 voksen, standard\n\nPris  579,00\nHerav mva 12 %  62,04",
+    "lines": [
+      {"text": "Oslo S – Lillehammer, 1 voksen, standard", "amount": "579.00"}
+    ],
     "employee_country": "NO",
     "vendor_country": "NO",
     "expense_purpose": "Møte hos leverandør på Lillehammer"
   },
   "text_en": "Togselskapet Nord AS\nCompany no. 999 100 005 VAT\nTicket 8812-4471\nOslo S to Lillehammer, 2026-09-10 at 08:02\n1 adult, standard\n\nPrice  579.00\nof which VAT 12 %  62.04",
+  "lines_en": [
+    {"text": "Oslo S to Lillehammer, 1 adult, standard", "amount": "579.00"}
+  ],
   "expected": {
     "judgments": {
-      "lodging_charged": false,
-      "served_food_charged": false,
-      "alcohol_charged": false,
-      "transport_charged": true,
-      "goods_charged": false,
       "hosted_guests": false,
       "guests_named": false,
       "purpose_fits_receipt": true,
-      "personal_items": false,
       "receipt_kind": "proof_of_purchase",
-      "purpose_detail": 1
+      "purpose_detail": 1,
+      "line_1": "transport"
     },
     "computed": {
-      "saft_code": "13",
-      "should_split": false,
       "foreign_purchase": false,
-      "kinds": ["transport"],
-      "vat_rates_found": ["12"],
+      "lines": [
+        {"text": "Oslo S – Lillehammer, 1 voksen, standard", "amount": "579.00", "category": "transport", "saft_code": "13"}
+      ],
+      "totals_by_code": {"13": "579.00"},
       "needs_review": false
     }
   }
