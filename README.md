@@ -70,18 +70,31 @@ Questions 1 to 5 are the same for every expense invoice. The line questions foll
 
 ## Measured
 
-Against `jev-1.13.0`, over the 16 samples in Norwegian and in English:
+All numbers are against `jev-1.13.0`.
 
-- 0.24 to 0.41 seconds per invoice (mean about 0.3), almost all of it the Jev call. The rules and storage add a few milliseconds.
-- About 1,000 to 2,100 input tokens per invoice, depending on the number of lines and earlier invoices, which is $0.00004 to $0.00009 at Jev's input price.
-- 108 to 109 of 112 answers on the right side of the app's thresholds, none on the wrong side. The uncertain answers mostly belong to questions the rules never read for that invoice.
-- The rules produced every sample's expected result in English, and 15 of 16 in Norwegian. The one miss is the taxi receipt, whose `purpose_fits_receipt` answer sits right at the 0.8 needed for a yes: at 0.79 it goes to review, at 0.80 it goes through.
+### On the 16 samples (tuning set)
 
-Throughput, sending 1,000 receipts to the local API with 20 requests in flight at a time:
+The questions were rewritten over several rounds against these same 16 samples until they passed, so these numbers show that the questions fit the samples they were tuned on. They are not evidence of accuracy.
 
-- 1,000 receipts in 17.4 seconds, about 57 per second, with no errors.
-- Median call 0.28 seconds, 90 % under 0.32 seconds. One call took 10.7 seconds, most likely a retry inside the SDK.
-- 1.8 million input tokens in total, $0.076 for all 1,000.
+- 108 to 109 of 112 answers on the right side of the app's thresholds, none on the wrong side.
+- The rules produced every sample's expected result in English, and 15 of 16 in Norwegian.
+
+### On 20 held-out documents
+
+`samples/holdout/` holds 12 receipts and 8 supplier invoices written afterwards by a separate author. They were committed before the first run, and the questions were not changed after it. They were run once, in Norwegian and in English (`python -m jev_invoices.bench samples/holdout`).
+
+- 136 to 137 of 143 answers on the right side of the thresholds, 5 uncertain, and 1 to 2 on the wrong side.
+- The rules produced the expected result for 16 of 20 documents in English and 14 of 20 in Norwegian.
+- Of the 10 wrong outcomes, 9 sent a document to review that should have passed. They were caused by uncertain answers near a threshold: six beers read as maybe more than one person, a hotel dinner in Paris read as maybe for more than one person, "the department" read as maybe not naming who ate, a freight line read as maybe not ordered, and "equipment for the home office" read as maybe too generic a purpose.
+- One went the other way. In Norwegian, a lip balm on a pharmacy receipt was classified as goods with 0.62 confidence, just above the 0.6 needed for a choice to count, so the private item was not flagged. In English the same line was 0.58, just under, and went to review.
+
+### Speed and cost
+
+These numbers measure throughput, not correctness.
+
+- 0.24 to 0.41 seconds per document (mean about 0.3), almost all of it the Jev call.
+- About 1,000 to 2,100 input tokens per document, which is $0.00004 to $0.00009 at Jev's input price.
+- 1,000 receipts sent to the local API with 20 requests in flight took 17.4 seconds, about 57 per second, with no errors. Median call 0.28 seconds, 90 % under 0.32 seconds. One call took 10.7 seconds, most likely a retry inside the SDK. 1.8 million input tokens in total, $0.076.
 
 TypeSafe's published rate limits (1,200 requests a minute, 250,000 tokens a second, currently adjusted dynamically) set the ceiling for larger batches.
 
