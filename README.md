@@ -72,12 +72,18 @@ Questions 1 to 5 are the same for every expense invoice. The line questions foll
 
 Against `jev-1.13.0`, over the 16 samples in Norwegian and in English:
 
-- 0.24 to 0.36 seconds per invoice (mean about 0.29), almost all of it the Jev call. The rules and storage add a few milliseconds.
-- About 900 to 2,100 input tokens per invoice, depending on the number of lines and earlier invoices, which is $0.00004 to $0.00009 at Jev's input price.
-- 110 of 112 answers on the right side of the app's thresholds in both languages, none on the wrong side. The two uncertain answers belong to questions the rules never read for that invoice.
-- The rules produced every sample's expected result in both languages.
+- 0.24 to 0.41 seconds per invoice (mean about 0.3), almost all of it the Jev call. The rules and storage add a few milliseconds.
+- About 1,000 to 2,100 input tokens per invoice, depending on the number of lines and earlier invoices, which is $0.00004 to $0.00009 at Jev's input price.
+- 108 to 109 of 112 answers on the right side of the app's thresholds, none on the wrong side. The uncertain answers mostly belong to questions the rules never read for that invoice.
+- The rules produced every sample's expected result in English, and 15 of 16 in Norwegian. The one miss is the taxi receipt, whose `purpose_fits_receipt` answer sits right at the 0.8 needed for a yes: at 0.79 it goes to review, at 0.80 it goes through.
 
-Answers close to a threshold can flip between runs. A taxi receipt once landed at 0.79 on `purpose_fits_receipt`, just under the 0.8 needed for a yes, and went to review.
+Throughput, sending 1,000 receipts to the local API with 20 requests in flight at a time:
+
+- 1,000 receipts in 17.4 seconds, about 57 per second, with no errors.
+- Median call 0.28 seconds, 90 % under 0.32 seconds. One call took 10.7 seconds, most likely a retry inside the SDK.
+- 1.8 million input tokens in total, $0.076 for all 1,000.
+
+TypeSafe's published rate limits (1,200 requests a minute, 250,000 tokens a second, currently adjusted dynamically) set the ceiling for larger batches.
 
 ## Run it
 
