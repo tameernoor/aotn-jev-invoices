@@ -2,7 +2,7 @@ import json
 
 from fakes import answers, level
 
-from jev_invoices.bench import SAMPLES_DIR, computed_check, load_samples, score, summarise
+from jev_invoices.bench import SAMPLES_DIR, computed_check, load_samples, score, summarise, to_json
 
 
 def test_score_uses_the_apps_thresholds_and_reports_uncertain_separately():
@@ -142,3 +142,46 @@ def test_load_samples_finds_both_kinds():
     kinds = [kind for kind, _ in load_samples()]
     assert kinds.count("expense") == 9
     assert kinds.count("vendor") == 7
+
+
+def test_a_row_with_a_totals_by_code_mismatch_serialises_to_json():
+    # line_1 answered "goods" instead of the expected "transport" moves the line's
+    # Decimal amount into a different totals_by_code bucket, so both `lines` and
+    # `totals_by_code` come back as mismatches, each carrying a real Decimal in `got`.
+    sample = json.loads((SAMPLES_DIR / "expense" / "taxi.json").read_text(encoding="utf-8"))
+    judgments = answers(
+        hosted_guests=0.05,
+        guests_named=0.05,
+        purpose_fits_receipt=0.95,
+        receipt_kind="proof_of_purchase",
+        purpose_detail=level(1),
+        line_1="goods",
+    )
+    computed = computed_check("expense", sample["request"], judgments, sample["expected"]["computed"])
+    assert computed["matches"] is False
+    assert "totals_by_code" in computed["differences"]
+
+    row = {
+        "sample": sample["name"],
+        "kind": "expense",
+        "lang": "no",
+        **score(judgments, sample["expected"]["judgments"]),
+        "computed": computed,
+        "judgments": judgments,
+        "jev": {
+            "model": "fake-jev",
+            "request_id": None,
+            "latency_ms": 1.0,
+            "question_count": len(judgments),
+            "input_tokens": 100,
+            "price_per_mtok_usd": 0.042,
+            "cost_usd": 0.0000042,
+        },
+    }
+
+    text = to_json({"no": {}}, [row])  # must not raise
+
+    assert json.loads(text)["rows"][0]["computed"]["differences"]["totals_by_code"] == {
+        "expected": {"13": "845.00"},
+        "got": {"1": "845.00"},
+    }

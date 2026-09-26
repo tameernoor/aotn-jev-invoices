@@ -117,11 +117,12 @@ def computed_check(kind: str, request_body: dict, judgments: dict, expected_comp
         recent = recent_invoices(body.invoice_date, earlier)
         computed = decide_vendor(judgments, checks, recent)
 
-    differences = {
-        key: {"expected": want, "got": computed.get(key)}
-        for key, want in expected_computed.items()
-        if _decimal_safe(computed.get(key)) != _decimal_safe(want)
-    }
+    differences = {}
+    for key, want in expected_computed.items():
+        want_safe = _decimal_safe(want)
+        got_safe = _decimal_safe(computed.get(key))
+        if got_safe != want_safe:
+            differences[key] = {"expected": want_safe, "got": got_safe}
     return {"matches": not differences, "differences": differences}
 
 
@@ -184,11 +185,18 @@ async def run() -> list[dict]:
     return rows
 
 
+def to_json(summary: dict, rows: list[dict]) -> str:
+    """The exact serialisation main() writes to OUT_FILE, pulled out so it can be tested
+    without a real Jev call. Every value reaching here must already be JSON-safe;
+    computed_check() is what keeps Decimal amounts out of `rows`."""
+    return json.dumps({"summary": summary, "rows": rows}, indent=2, ensure_ascii=False)
+
+
 def main() -> None:
     rows = asyncio.run(run())
     summary = summarise(rows)
     OUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    OUT_FILE.write_text(json.dumps({"summary": summary, "rows": rows}, indent=2, ensure_ascii=False), encoding="utf-8")
+    OUT_FILE.write_text(to_json(summary, rows), encoding="utf-8")
     for lang, s in summary.items():
         print(
             f"{lang}: {s['correct']}/{s['total']} correct, {s['uncertain']} uncertain, {s['misses']} missed, "
