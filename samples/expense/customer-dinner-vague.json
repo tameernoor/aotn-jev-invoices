@@ -1,6 +1,6 @@
 {
   "name": "customer-dinner-vague",
-  "note": "Same restaurant receipt as customer-dinner, but the purpose names no guest. Entertainment without named guests goes to review.",
+  "note": "Same restaurant receipt as customer-dinner, but the purpose does not say who ate. Hospitality without the diners goes to review (bokføringsforskriften § 5-10).",
   "request": {
     "invoice_text": "Restaurant Kveldsglimt AS\nOrg.nr 999 100 002 MVA\nBord 12, 08.09.2026 kl. 19:40\n\n3 x Hovedrett torsk  395,00  1 185,00\n1 x Flaske hvitvin, Chablis  890,00\n3 x Kaffe  45,00  135,00\n\nTotalt  2 210,00\nHerav mva 25 %  442,00",
     "lines": [

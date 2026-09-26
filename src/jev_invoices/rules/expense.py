@@ -2,8 +2,8 @@
 
 Codes are Skatteetaten's SAF-T standard tax codes (Standard_Tax_Codes.csv).
 Rates from skatteetaten.no/satser/merverdiavgift (2026): regular 25 %, food 15 %,
-passenger transport and room rental 12 %. No deduction for serving (servering)
-or entertainment (representasjon), merverdiavgiftsloven § 8-3 (1) a and e.
+passenger transport and room rental 12 %. No deduction for serving (servering),
+merverdiavgiftsloven § 8-3 (1) a.
 """
 
 import re

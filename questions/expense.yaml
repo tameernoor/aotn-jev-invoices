@@ -11,14 +11,14 @@ food_for_several:
   instructions: Does `invoice_text` show food or drink for more than one person?
   criteria:
     "true": The lines show meals or drinks for two or more people, for example "3 x Hovedrett" or two main courses.
-    "false": The food or drink is for one person, or there is no food or drink.
+    "false": 'The food or drink is for one person, or there is no food or drink. A drink with something to eat, such as a coffee and a sandwich, is for one person. Several drinks or coffees alone do not show more than one person.'
 
 diners_named:
   type: noul
   instructions: Does `expense_purpose` say who ate or drank, by name, company or group?
   criteria:
     "true": 'At least one person, company or group who ate or drank is named, for example "Per Lund from Sølvtind Rør AS" or "the project group".'
-    "false": '`expense_purpose` does not say who ate or drank, for example "customer dinner" or "dinner".'
+    "false": '`expense_purpose` does not say who ate or drank, for example "customer dinner", "dinner with colleagues" or "dinner". A purpose with no food or drink is false.'
 
 purpose_fits_receipt:
   type: noul

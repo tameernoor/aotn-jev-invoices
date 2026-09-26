@@ -69,10 +69,17 @@ def test_food_for_several_and_not_named_flags():
         food_for_several=0.95,
         diners_named=0.05,
     )
-    assert any(
-        "Hospitality must say who ate or drank (bokføringsforskriften § 5-10)." == flag
-        for flag in result["flags"]
+    assert "Hospitality must say who ate or drank (bokføringsforskriften § 5-10)." in result["flags"]
+    assert result["needs_review"] is True
+
+
+def test_drinks_for_several_without_diners_flags():
+    result = code(
+        [("Flaske hvitvin, Chablis", "890.00", "alcohol")],
+        food_for_several=0.95,
+        diners_named=0.05,
     )
+    assert "Hospitality must say who ate or drank (bokføringsforskriften § 5-10)." in result["flags"]
     assert result["needs_review"] is True
 
 
