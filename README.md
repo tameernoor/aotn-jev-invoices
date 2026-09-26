@@ -85,15 +85,15 @@ The questions were rewritten over several rounds against these same 16 samples u
 
 - 136 to 137 of 143 answers on the right side of the thresholds, 5 uncertain, and 1 to 2 on the wrong side.
 - The rules produced the expected result for 16 of 20 documents in English and 14 of 20 in Norwegian.
-- Of the 10 wrong outcomes, 9 sent a document to review that should have passed. They were caused by uncertain answers near a threshold: six beers read as maybe more than one person, a hotel dinner in Paris read as maybe for more than one person, "the department" read as maybe not naming who ate, a freight line read as maybe not ordered, and "equipment for the home office" read as maybe too generic a purpose.
+- Of the 10 wrong outcomes, 9 sent a document to review that should have passed. Most were caused by uncertain answers near a threshold: six beers read as maybe more than one person (in English 0.80, just enough to count as yes, together with a purpose read as too generic; these are the two wrong-side answers), a hotel dinner in Paris read as maybe for more than one person, "the department" read as maybe not naming who ate, a freight line read as maybe not ordered, and "equipment for the home office" read as maybe too generic a purpose.
 - One went the other way. In Norwegian, a lip balm on a pharmacy receipt was classified as goods with 0.62 confidence, just above the 0.6 needed for a choice to count, so the private item was not flagged. In English the same line was 0.58, just under, and went to review.
 
 ### Speed and cost
 
 These numbers measure throughput, not correctness.
 
-- 0.24 to 0.41 seconds per document (mean about 0.3), almost all of it the Jev call.
-- About 1,000 to 2,100 input tokens per document, which is $0.00004 to $0.00009 at Jev's input price.
+- 0.23 to 0.41 seconds per document (mean about 0.3), almost all of it the Jev call.
+- About 1,000 to 2,600 input tokens per document, which is $0.00004 to $0.00011 at Jev's input price.
 - 1,000 receipts sent to the local API with 20 requests in flight took 17.4 seconds, about 57 per second, with no errors. Median call 0.28 seconds, 90 % under 0.32 seconds. One call took 10.7 seconds, most likely a retry inside the SDK. 1.8 million input tokens in total, $0.076.
 
 TypeSafe's published rate limits (1,200 requests a minute, 250,000 tokens a second, currently adjusted dynamically) set the ceiling for larger batches.
