@@ -7,7 +7,7 @@ Jev, TypeSafe AI's System One model, answers narrow questions about an invoice. 
 ## What it shows
 
 - **One request per invoice.** Every question for an invoice goes to Jev in a single request. Jev reads the invoice once and answers all the questions in parallel on its side. Some answers turn out not to matter for a given invoice, and the code simply ignores them.
-- **Classifiers defined at runtime.** The questions live in `questions/expense.yaml` and `questions/vendor.yaml`. A new classifier is a new entry there, or an `extra_questions` field on a single request. Vendor invoices also get one generated question per earlier invoice, built from the request data rather than the YAML; expense invoices get one generated choice question per receipt line, built from the lines in the request. Nothing is trained.
+- **Classifiers defined at runtime.** The questions live in `questions/expense.yaml` and `questions/vendor.yaml`. A new classifier is a new entry there, or an `extra_questions` field on a single request. Vendor invoices also get one generated question per earlier invoice dated inside the 60-day resend window, built from the request data rather than the YAML; expense invoices get one generated choice question per receipt line, built from the lines in the request. Nothing is trained.
 - **Policy stays in code.** `src/jev_invoices/rules/` holds the VAT and approval rules as ordinary functions. Each record lists which answers the rules actually read, and only those can send an invoice to review.
 
 ## The questions
@@ -54,7 +54,7 @@ Vendor invoices also get generated yes/no questions asking whether this is the s
 
 Take `samples/expense/hotel-oslo-minibar.json`: a hotel invoice with two lines, a room and a minibar beer. One request goes to Jev with the receipt text, the countries and the stated purpose as `state`, and seven questions:
 
-| # | id | type | question |
+| # | id | type | asks, in short |
 |---|---|---|---|
 | 1 | `hosted_guests` | noul | Did this expense pay for guests from outside the company? |
 | 2 | `guests_named` | noul | Does the purpose name the guests or their company? |
@@ -124,7 +124,7 @@ The answer is stored with the record. No rule reads it until someone writes one.
 
 ## What gets stored
 
-Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `judgments` (what Jev answered) apart from `computed` (what the code decided), and `jev` holds the model version, latency, input tokens and cost. The price per million tokens is stored next to the cost, because one invoice costs a small fraction of a cent (see Measured).
+Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `judgments` (what Jev answered) apart from `computed` (what the code decided), and `jev` holds the model version, latency, input tokens and cost. The price per million tokens is stored next to the cost, so the cost can be checked later; one invoice costs a small fraction of a cent (see Measured).
 
 ## Language bench
 
