@@ -1,0 +1,45 @@
+# Expense invoice questions. All are sent to Jev in one request and every one is read by a rule.
+# Ids are never sent to the model, so each instruction carries the whole question.
+# Keys "true" and "false" are quoted so YAML keeps them as strings.
+
+# What was bought is asked per line; see questions.line_questions.
+
+# Policy and documentation controls. The common expense claim problems.
+
+hosted_guests:
+  type: noul
+  instructions: Did this expense pay for guests from outside the company, such as customers or suppliers? Use `expense_purpose` together with `invoice_text`.
+  criteria:
+    "true": The expense includes hosting people from outside the company, for example a meal or event with customers or suppliers.
+    "false": Only the employee or colleagues used what was paid for, even if the trip was to meet someone outside the company.
+
+guests_named:
+  type: noul
+  instructions: Does `expense_purpose` name the guests from outside the company, or the company they came from?
+  criteria:
+    "true": At least one guest's name or the guests' company is written in `expense_purpose`.
+    "false": '`expense_purpose` names no guest and no company, for example "customer dinner".'
+
+purpose_fits_receipt:
+  type: noul
+  instructions: Do most of the lines in `invoice_text` fit the purpose given in `expense_purpose`? A single private item does not make the answer no.
+  criteria:
+    "true": The purpose describes what was bought, or the purpose does not say what was bought.
+    "false": The purpose describes something clearly different from what was bought, for example a train ticket when the receipt is for a restaurant.
+
+receipt_kind:
+  type: choice
+  instructions: What kind of document is `invoice_text`?
+  criteria:
+    proof_of_purchase: A receipt, ticket or invoice that shows what was bought and its price.
+    card_slip: A payment terminal slip that shows only the card payment and the total, not what was bought.
+    booking_confirmation: A confirmation of a booking or order, not proof of payment.
+    other: Any other document.
+
+purpose_detail:
+  type: score
+  instructions: How specific is `expense_purpose` about the work this expense was for?
+  criteria:
+    - Missing, or a single generic word with no subject, such as "meeting", "work" or "travel".
+    - Names what kind of work it was, such as "project meeting", "sales course", "customer dinner" or "trip home from a conference".
+    - Names the specific event, project or people, such as "contract law course" or "dinner with Hansen from Acme AS".

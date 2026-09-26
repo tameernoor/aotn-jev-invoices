@@ -1,0 +1,43 @@
+{
+  "name": "disguised-duplicate",
+  "note": "New invoice number, same amount and the same delivery (packing slip 5512) as invoice 20931.",
+  "request": {
+    "invoice_text": "Nordlys Kontorservice AS\nOrg.nr 999 200 002 MVA\nFaktura 20958, dato 19.09.2026\nDeres bestilling: PO-2026-118\n\nKaffebønner, hele, 1 kg  20 x 189,00  3 780,00\nFilterpapir 1x4, 100 stk  10 x 39,00  390,00\nLevert 11.09.2026, pakkseddel 5512\n\nÅ betale  4 170,00\nHerav mva 15 %  493,04\nHerav mva 25 %  78,00\nForfall 19.10.2026\nKontonummer 1503.12.34567",
+    "invoice_number": "20958",
+    "amount": "4170.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-19",
+    "due_date": "2026-10-19",
+    "bank_account": "1503.12.34567",
+    "vendor": {"name": "Nordlys Kontorservice AS", "org_number": "999 200 002", "bank_account_on_file": "1503.12.34567"},
+    "purchase_order": {
+      "number": "PO-2026-118",
+      "lines": [
+        {"description": "Kaffebønner, hele, 1 kg", "quantity": "20", "unit_price": "189.00"},
+        {"description": "Filterpapir 1x4, 100 stk", "quantity": "10", "unit_price": "39.00"}
+      ],
+      "total": "4170.00"
+    },
+    "earlier_invoices": [
+      {"invoice_number": "20877", "invoice_date": "2026-08-12", "amount": "3950.00", "text": "Faktura 20877\nKaffebønner, hele, 1 kg  20 x 189,00  3 780,00\nMelk, lang holdbarhet, 1 l  20 x 8,50  170,00\nLevert 11.08.2026, pakkseddel 5390\nÅ betale  3 950,00\nHerav mva 15 %  515,22"},
+      {"invoice_number": "20931", "invoice_date": "2026-09-12", "amount": "4170.00", "text": "Faktura 20931\nKaffebønner, hele, 1 kg  20 x 189,00  3 780,00\nFilterpapir 1x4, 100 stk  10 x 39,00  390,00\nLevert 11.09.2026, pakkseddel 5512\nÅ betale  4 170,00\nHerav mva 15 %  493,04\nHerav mva 25 %  78,00"}
+    ]
+  },
+  "text_en": "Nordlys Kontorservice AS\nCompany no. 999 200 002 VAT\nInvoice 20958, date 2026-09-19\nYour order: PO-2026-118\n\nCoffee beans, whole, 1 kg  20 x 189.00  3,780.00\nFilter paper 1x4, 100 pcs  10 x 39.00  390.00\nDelivered 2026-09-11, packing slip 5512\n\nAmount due  4,170.00\nof which VAT 15 %  493.04\nof which VAT 25 %  78.00\nDue 2026-10-19\nAccount number 1503.12.34567",
+  "expected": {
+    "judgments": {
+      "line_specificity": 2,
+      "po_items_billed": true,
+      "unordered_items": false,
+      "bank_change_request": false,
+      "payment_pressure": false,
+      "document_kind": "invoice",
+      "same_as_20877": false,
+      "same_as_20931": true
+    },
+    "computed": {
+      "decision": "review",
+      "checks": {"amount_within_tolerance": true, "invoice_number_seen": false, "bank_account_matches": true}
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "office-supplies",
+  "note": "Chargers and a notebook. Nothing special, regular rate.",
+  "request": {
+    "invoice_text": "Kontorlageret AS\nOrg.nr 999 100 006 MVA\nKvittering 30019, 11.09.2026\n\n2 x USB-C-lader 65 W  299,00  598,00\n1 x Notatbok A5  89,00\n\nSum  687,00\nHerav mva 25 %  137,40",
+    "lines": [
+      {"text": "USB-C-lader 65 W", "amount": "598.00"},
+      {"text": "Notatbok A5", "amount": "89.00"}
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Lader og notatbok til hjemmekontoret, brukes i prosjektarbeid"
+  },
+  "text_en": "Kontorlageret AS\nCompany no. 999 100 006 VAT\nReceipt 30019, 2026-09-11\n\n2 x USB-C charger 65 W  299.00  598.00\n1 x Notebook A5  89.00\n\nTotal  687.00\nof which VAT 25 %  137.40",
+  "lines_en": [
+    {"text": "USB-C charger 65 W", "amount": "598.00"},
+    {"text": "Notebook A5", "amount": "89.00"}
+  ],
+  "expected": {
+    "judgments": {
+      "hosted_guests": false,
+      "guests_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 1,
+      "line_1": "goods",
+      "line_2": "goods"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {"text": "USB-C-lader 65 W", "amount": "598.00", "category": "goods", "saft_code": "1"},
+        {"text": "Notatbok A5", "amount": "89.00", "category": "goods", "saft_code": "1"}
+      ],
+      "totals_by_code": {"1": "687.00"},
+      "needs_review": false
+    }
+  }
+}

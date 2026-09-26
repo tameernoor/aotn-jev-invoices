@@ -1,0 +1,50 @@
+# Vendor invoice questions. Jev reads descriptions only; amounts, dates, invoice numbers
+# and bank accounts are compared in code. Code adds one duplicate question per earlier
+# invoice at request time (see questions.duplicate_questions).
+
+line_specificity:
+  type: score
+  instructions: How specifically do the lines in `invoice_text` describe what was delivered? Judge the least specific line that charges for goods or services. Ignore freight, invoice fees, environmental fees and rounding lines.
+  criteria:
+    - Generic, such as "services", "consulting" or "miscellaneous", without saying what was done or delivered.
+    - Names the kind of goods or service, but not the items, quantities or work done.
+    - Names the items, quantities or the work done.
+
+po_items_billed:
+  type: noul
+  instructions: Do the lines in `invoice_text` charge for goods or services described in `purchase_order`? Judge the descriptions only, not quantities, prices or totals.
+  criteria:
+    "true": The lines name goods or services from `purchase_order`. Billing only some of the ordered items counts as yes.
+    "false": None of the lines name goods or services from `purchase_order`.
+
+unordered_items:
+  type: noul
+  instructions: Does `invoice_text` charge for at least one item or service that `purchase_order` does not include?
+  criteria:
+    "true": At least one line names goods or services that are not in `purchase_order`.
+    "false": Every line is in `purchase_order`. Freight, invoice fees, environmental fees and rounding lines count as no.
+
+bank_change_request:
+  type: noul
+  instructions: Does `invoice_text` ask for payment to a new, changed or different bank account?
+  criteria:
+    "true": The text says payment should go to a new, changed or different account.
+    "false": The text only states where to pay, with no mention of a change.
+
+payment_pressure:
+  type: noul
+  instructions: Does `invoice_text` use urgent or threatening language about payment, or ask to skip the normal approval of invoices?
+  criteria:
+    "true": The text says things like "must be paid today" or "urgent", threatens to stop deliveries, or says the invoice should not go through approval.
+    "false": The text only states payment terms or a due date, including "due on receipt" or "netto kontant", without urgent or threatening language.
+
+document_kind:
+  type: choice
+  instructions: What kind of document is `invoice_text`?
+  criteria:
+    invoice: A request for payment for goods or services that is not a reminder, credit note or statement.
+    credit_note: A credit note reducing an earlier invoice.
+    reminder: A reminder that refers to an earlier invoice which has not been paid, or to a due date that has passed.
+    account_statement: A statement listing several invoices or the balance on an account.
+    order_confirmation: A confirmation of an order, not a request for payment.
+    other: Any other document.

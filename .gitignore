@@ -4,3 +4,6 @@ samples/local/
 *.sqlite
 docs/
 .superpowers/
+.venv/
+__pycache__/
+.pytest_cache/

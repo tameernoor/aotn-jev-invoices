@@ -1,0 +1,37 @@
+{
+  "name": "vague-services",
+  "note": "The line reads 'miscellaneous services' with no detail. Too generic to check against the PO, so the order questions are never read.",
+  "request": {
+    "invoice_text": "Tindrefjell Rådgivning AS\nOrg.nr 999 300 001 MVA\nFaktura 3107, dato 30.09.2026\nDeres bestilling: PO-2026-140\n\nDiverse tjenester september  12 500,00\n\nÅ betale  12 500,00\nHerav mva 25 %  2 500,00\nForfall 14.10.2026\nKontonummer 1720.44.10293",
+    "invoice_number": "3107",
+    "amount": "12500.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-30",
+    "due_date": "2026-10-14",
+    "bank_account": "1720.44.10293",
+    "vendor": {"name": "Tindrefjell Rådgivning AS", "org_number": "999 300 001", "bank_account_on_file": "1720.44.10293"},
+    "purchase_order": {
+      "number": "PO-2026-140",
+      "lines": [
+        {"description": "IT-sikkerhetsrådgivning, september", "quantity": "10", "unit_price": "1250.00"}
+      ],
+      "total": "12500.00"
+    },
+    "earlier_invoices": []
+  },
+  "text_en": "Tindrefjell Rådgivning AS\nCompany no. 999 300 001 VAT\nInvoice 3107, date 2026-09-30\nYour order: PO-2026-140\n\nMiscellaneous services September  12,500.00\n\nAmount due  12,500.00\nof which VAT 25 %  2,500.00\nDue 2026-10-14\nAccount number 1720.44.10293",
+  "expected": {
+    "judgments": {
+      "line_specificity": 0,
+      "po_items_billed": false,
+      "unordered_items": true,
+      "bank_change_request": false,
+      "payment_pressure": false,
+      "document_kind": "invoice"
+    },
+    "computed": {
+      "decision": "review",
+      "checks": {"amount_within_tolerance": true, "invoice_number_seen": false, "bank_account_matches": true}
+    }
+  }
+}

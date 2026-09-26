@@ -1,0 +1,35 @@
+{
+  "name": "taxi",
+  "note": "Taxi from the airport. Passenger transport at the low rate.",
+  "request": {
+    "invoice_text": "Taxi Nordlysveien AS\nOrg.nr 999 100 003 MVA\nKvittering 55120\nTur: Oslo lufthavn – Majorstuen\n04.09.2026 kl. 07:12, 47 km\n\nÅ betale  845,00\nHerav mva 12 %  90,54\nBetalt med kort",
+    "lines": [
+      {"text": "Tur: Oslo lufthavn – Majorstuen", "amount": "845.00"}
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Hjemreise fra konferanse"
+  },
+  "text_en": "Taxi Nordlysveien AS\nCompany no. 999 100 003 VAT\nReceipt 55120\nTrip: Oslo Airport to Majorstuen\n2026-09-04 at 07:12, 47 km\n\nAmount due  845.00\nof which VAT 12 %  90.54\nPaid by card",
+  "lines_en": [
+    {"text": "Trip: Oslo Airport to Majorstuen", "amount": "845.00"}
+  ],
+  "expected": {
+    "judgments": {
+      "hosted_guests": false,
+      "guests_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 1,
+      "line_1": "transport"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {"text": "Tur: Oslo lufthavn – Majorstuen", "amount": "845.00", "category": "transport", "saft_code": "13"}
+      ],
+      "totals_by_code": {"13": "845.00"},
+      "needs_review": false
+    }
+  }
+}
