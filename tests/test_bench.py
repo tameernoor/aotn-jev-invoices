@@ -7,19 +7,19 @@ from jev_invoices.bench import SAMPLES_DIR, computed_check, load_samples, score,
 
 def test_score_uses_the_apps_thresholds_and_reports_uncertain_separately():
     judgments = answers(
-        hosted_guests=0.9, guests_named=0.5, purpose_fits_receipt=0.1, receipt_kind="proof_of_purchase"
+        food_for_several=0.9, diners_named=0.5, purpose_fits_receipt=0.1, receipt_kind="proof_of_purchase"
     )
     result = score(
         judgments,
         {
-            "hosted_guests": True,
-            "guests_named": True,
+            "food_for_several": True,
+            "diners_named": True,
             "purpose_fits_receipt": True,
             "receipt_kind": "proof_of_purchase",
         },
     )
     assert result == {
-        "correct": 2, "uncertain": ["guests_named"], "misses": ["purpose_fits_receipt"], "total": 4
+        "correct": 2, "uncertain": ["diners_named"], "misses": ["purpose_fits_receipt"], "total": 4
     }
 
 
@@ -55,8 +55,8 @@ def test_score_counts_a_low_confidence_choice_as_uncertain():
 def test_computed_check_runs_the_real_rules_and_reports_differences():
     sample = json.loads((SAMPLES_DIR / "expense" / "taxi.json").read_text(encoding="utf-8"))
     judgments = answers(
-        hosted_guests=0.05,
-        guests_named=0.05,
+        food_for_several=0.05,
+        diners_named=0.05,
         purpose_fits_receipt=0.95,
         receipt_kind="proof_of_purchase",
         purpose_detail=level(1),
@@ -96,7 +96,7 @@ def test_summarise_per_language():
         {
             "lang": "no",
             "correct": 6,
-            "uncertain": ["guests_named"],
+            "uncertain": ["diners_named"],
             "misses": [],
             "total": 7,
             "computed": {"matches": True, "differences": {}},
@@ -150,8 +150,8 @@ def test_a_row_with_a_totals_by_code_mismatch_serialises_to_json():
     # `totals_by_code` come back as mismatches, each carrying a real Decimal in `got`.
     sample = json.loads((SAMPLES_DIR / "expense" / "taxi.json").read_text(encoding="utf-8"))
     judgments = answers(
-        hosted_guests=0.05,
-        guests_named=0.05,
+        food_for_several=0.05,
+        diners_named=0.05,
         purpose_fits_receipt=0.95,
         receipt_kind="proof_of_purchase",
         purpose_detail=level(1),
@@ -196,8 +196,8 @@ def test_computed_check_ignores_line_text_so_the_english_run_still_matches():
     assert request["lines"][0]["text"] != sample["expected"]["computed"]["lines"][0]["text"]
 
     judgments = answers(
-        hosted_guests=0.05,
-        guests_named=0.05,
+        food_for_several=0.05,
+        diners_named=0.05,
         purpose_fits_receipt=0.95,
         receipt_kind="proof_of_purchase",
         purpose_detail=level(1),
@@ -215,8 +215,8 @@ def test_computed_check_matches_amounts_numerically_regardless_of_trailing_zeros
     request = {**sample["request"], "lines": [line]}
 
     judgments = answers(
-        hosted_guests=0.05,
-        guests_named=0.05,
+        food_for_several=0.05,
+        diners_named=0.05,
         purpose_fits_receipt=0.95,
         receipt_kind="proof_of_purchase",
         purpose_detail=level(1),

@@ -18,8 +18,8 @@
   ],
   "expected": {
     "judgments": {
-      "hosted_guests": false,
-      "guests_named": false,
+      "food_for_several": false,
+      "diners_named": false,
       "purpose_fits_receipt": true,
       "receipt_kind": "proof_of_purchase",
       "purpose_detail": 1,
