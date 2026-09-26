@@ -1,0 +1,63 @@
+{
+  "name": "window-cleaning-services",
+  "note": "Monthly window cleaning, billed for September with the dates the work was done. The August invoice is a different period.",
+  "request": {
+    "invoice_text": "Blikkstad Vinduspuss AS\nOrg.nr 925 318 704 MVA\nFaktura 3318, dato 21.09.2026\nKunde: Varglia Bygg AS, Industrigata 7\nDeres ref.: PO-2026-231\n\nVindusvask utvendig og innvendig, Industrigata 7, 3 etasjer, utført 15.–16.09.2026  1 x 6 400,00  6 400,00\n\nÅ betale  6 400,00\nHerav mva 25 %  1 280,00\nForfall 05.10.2026\nKontonummer 1206.44.71539\nKID 0033180217",
+    "invoice_number": "3318",
+    "amount": "6400.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-21",
+    "due_date": "2026-10-05",
+    "bank_account": "1206.44.71539",
+    "vendor": {
+      "name": "Blikkstad Vinduspuss AS",
+      "org_number": "925 318 704",
+      "bank_account_on_file": "1206.44.71539"
+    },
+    "purchase_order": {
+      "number": "PO-2026-231",
+      "lines": [
+        {
+          "description": "Vindusvask utvendig og innvendig, Industrigata 7, september 2026",
+          "quantity": "1",
+          "unit_price": "6400.00"
+        }
+      ],
+      "total": "6400.00"
+    },
+    "earlier_invoices": [
+      {
+        "invoice_number": "3170",
+        "invoice_date": "2026-06-18",
+        "amount": "6400.00",
+        "text": "Faktura 3170\nVindusvask utvendig og innvendig, Industrigata 7, 3 etasjer, utført 11.–12.06.2026  6 400,00\nÅ betale  6 400,00\nHerav mva 25 %  1 280,00"
+      },
+      {
+        "invoice_number": "3261",
+        "invoice_date": "2026-08-20",
+        "amount": "6400.00",
+        "text": "Faktura 3261\nVindusvask utvendig og innvendig, Industrigata 7, 3 etasjer, utført 13.–14.08.2026  6 400,00\nÅ betale  6 400,00\nHerav mva 25 %  1 280,00"
+      }
+    ]
+  },
+  "text_en": "Blikkstad Vinduspuss AS\nCompany no. 925 318 704 VAT\nInvoice 3318, date 2026-09-21\nCustomer: Varglia Bygg AS, Industrigata 7\nYour ref.: PO-2026-231\n\nWindow cleaning outside and inside, Industrigata 7, 3 floors, done 15–16 Sep 2026  1 x 6,400.00  6,400.00\n\nAmount due  6,400.00\nof which VAT 25 %  1,280.00\nDue 2026-10-05\nAccount number 1206.44.71539\nKID 0033180217",
+  "expected": {
+    "judgments": {
+      "line_specificity": 2,
+      "po_items_billed": true,
+      "unordered_items": false,
+      "bank_change_request": false,
+      "payment_pressure": false,
+      "document_kind": "invoice",
+      "same_as_3261": false
+    },
+    "computed": {
+      "decision": "approve",
+      "checks": {
+        "amount_within_tolerance": true,
+        "invoice_number_seen": false,
+        "bank_account_matches": true
+      }
+    }
+  }
+}

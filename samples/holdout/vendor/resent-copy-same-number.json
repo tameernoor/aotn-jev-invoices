@@ -1,0 +1,72 @@
+{
+  "name": "resent-copy-same-number",
+  "note": "The vendor re-sent invoice 60781 marked KOPI at the customer's request. Same number as an invoice already received.",
+  "request": {
+    "invoice_text": "KOPI – sendt på nytt etter ønske fra kunde\n\nBønnevik Kaffeservice AS\nOrg.nr 920 831 746 MVA\nFaktura 60781, dato 02.09.2026\nKunde: Varglia Bygg AS\nDeres ref.: PO-2026-236\n\nService og avkalking kaffemaskin, kantine 2. etg.  2 x 1 890,00  3 780,00\nBytte vannfilter  2 x 420,00  840,00\nUtført 31.08.2026, serviceordre 7719\n\nÅ betale  4 620,00\nHerav mva 25 %  924,00\nForfall 16.09.2026\nKontonummer 1450.18.77362",
+    "invoice_number": "60781",
+    "amount": "4620.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-02",
+    "due_date": "2026-09-16",
+    "bank_account": "1450.18.77362",
+    "vendor": {
+      "name": "Bønnevik Kaffeservice AS",
+      "org_number": "920 831 746",
+      "bank_account_on_file": "1450.18.77362"
+    },
+    "purchase_order": {
+      "number": "PO-2026-236",
+      "lines": [
+        {
+          "description": "Service og avkalking kaffemaskin, 2 stk",
+          "quantity": "2",
+          "unit_price": "1890.00"
+        },
+        {
+          "description": "Vannfilter, 2 stk",
+          "quantity": "2",
+          "unit_price": "420.00"
+        }
+      ],
+      "total": "4620.00"
+    },
+    "earlier_invoices": [
+      {
+        "invoice_number": "60655",
+        "invoice_date": "2026-07-15",
+        "amount": "2310.00",
+        "text": "Faktura 60655\nService og avkalking kaffemaskin, møterom 4. etg.  1 x 1 890,00  1 890,00\nBytte vannfilter  1 x 420,00  420,00\nUtført 13.07.2026, serviceordre 7502\nÅ betale  2 310,00\nHerav mva 25 %  462,00"
+      },
+      {
+        "invoice_number": "60781",
+        "invoice_date": "2026-09-02",
+        "amount": "4620.00",
+        "text": "Faktura 60781\nService og avkalking kaffemaskin, kantine 2. etg.  2 x 1 890,00  3 780,00\nBytte vannfilter  2 x 420,00  840,00\nUtført 31.08.2026, serviceordre 7719\nÅ betale  4 620,00\nHerav mva 25 %  924,00"
+      }
+    ]
+  },
+  "text_en": "COPY – re-sent at the customer's request\n\nBønnevik Kaffeservice AS\nCompany no. 920 831 746 VAT\nInvoice 60781, date 2026-09-02\nCustomer: Varglia Bygg AS\nYour ref.: PO-2026-236\n\nService and descaling of coffee machine, canteen 2nd floor  2 x 1,890.00  3,780.00\nWater filter replacement  2 x 420.00  840.00\nDone 2026-08-31, service order 7719\n\nAmount due  4,620.00\nof which VAT 25 %  924.00\nDue 2026-09-16\nAccount number 1450.18.77362",
+  "expected": {
+    "judgments": {
+      "line_specificity": 2,
+      "po_items_billed": true,
+      "unordered_items": false,
+      "bank_change_request": false,
+      "payment_pressure": false,
+      "document_kind": "invoice",
+      "same_as_60655": false,
+      "same_as_60781": true
+    },
+    "computed": {
+      "decision": "review",
+      "checks": {
+        "amount_within_tolerance": true,
+        "invoice_number_seen": true,
+        "bank_account_matches": true
+      }
+    }
+  },
+  "ambiguous": [
+    "document_kind: a re-sent copy whose due date has now passed could be read as a reminder, but the text does not mention non-payment"
+  ]
+}

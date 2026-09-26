@@ -1,0 +1,67 @@
+{
+  "name": "ebooks-zero-vat",
+  "note": "Two professional e-books from a web shop, zero-rated. The line criteria have no digital-content option.",
+  "request": {
+    "invoice_text": "Boksvala Digital AS\nOrg.nr 923 648 015 MVA\nKvittering for kjøp i nettbutikk\nOrdre 2026-551804, 21.09.2026\n\nE-bok: Anbudsprosesser i praksis (EPUB)  349,00\nE-bok: Kontraktsstyring for prosjektledere (EPUB)  289,00\n\nSum  638,00\nMva 0 %  0,00\nBetalt med Vipps 21.09.2026\nBøkene ligger i ditt bibliotek i appen.",
+    "lines": [
+      {
+        "text": "E-bok: Anbudsprosesser i praksis (EPUB)",
+        "amount": "349.00"
+      },
+      {
+        "text": "E-bok: Kontraktsstyring for prosjektledere (EPUB)",
+        "amount": "289.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Faglitteratur til innkjøpsavdelingen"
+  },
+  "text_en": "Boksvala Digital AS\nCompany no. 923 648 015 VAT\nReceipt for web shop purchase\nOrder 2026-551804, 2026-09-21\n\nE-book: Tendering in practice (EPUB)  349.00\nE-book: Contract management for project managers (EPUB)  289.00\n\nTotal  638.00\nVAT 0 %  0.00\nPaid with Vipps 2026-09-21\nThe books are in your library in the app.",
+  "lines_en": [
+    {
+      "text": "E-book: Tendering in practice (EPUB)",
+      "amount": "349.00"
+    },
+    {
+      "text": "E-book: Contract management for project managers (EPUB)",
+      "amount": "289.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": false,
+      "diners_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 1,
+      "line_1": "goods",
+      "line_2": "goods"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {
+          "text": "E-bok: Anbudsprosesser i praksis (EPUB)",
+          "amount": "349.00",
+          "category": "goods",
+          "saft_code": "1"
+        },
+        {
+          "text": "E-bok: Kontraktsstyring for prosjektledere (EPUB)",
+          "amount": "289.00",
+          "category": "goods",
+          "saft_code": "1"
+        }
+      ],
+      "totals_by_code": {
+        "1": "638.00"
+      },
+      "needs_review": false
+    }
+  },
+  "ambiguous": [
+    "line_1: an e-book is an item for work but not one to 'take away'; goods or other_cost",
+    "line_2: same as line_1"
+  ]
+}

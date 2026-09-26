@@ -1,0 +1,66 @@
+{
+  "name": "electronics-bag-headphones",
+  "note": "Laptop bag and noise-cancelling headphones for a home office. Headphones sit between equipment and private use.",
+  "request": {
+    "invoice_text": "Elkrona Elektronikk AS\nOrg.nr 914 776 209 MVA\nKvittering 118-40592  Kasse 3\n19.09.2026 16:05\n\nLaptopveske 15,6\", grå  1 x 649,00  649,00\nHodetelefoner trådløse, aktiv støydemping, svart  1 x 2 199,00  2 199,00\n\nTotalt  2 848,00\nHerav mva 25 %  569,60\nBetalt: Visa ****7715\nÅpent kjøp 30 dager",
+    "lines": [
+      {
+        "text": "Laptopveske 15,6\", grå",
+        "amount": "649.00"
+      },
+      {
+        "text": "Hodetelefoner trådløse, aktiv støydemping, svart",
+        "amount": "2199.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Utstyr til hjemmekontoret"
+  },
+  "text_en": "Elkrona Elektronikk AS\nCompany no. 914 776 209 VAT\nReceipt 118-40592  Till 3\n2026-09-19 16:05\n\nLaptop bag 15.6\", grey  1 x 649.00  649.00\nWireless headphones, active noise cancelling, black  1 x 2,199.00  2,199.00\n\nTotal  2,848.00\nof which VAT 25 %  569.60\nPaid: Visa ****7715\n30-day return policy",
+  "lines_en": [
+    {
+      "text": "Laptop bag 15.6\", grey",
+      "amount": "649.00"
+    },
+    {
+      "text": "Wireless headphones, active noise cancelling, black",
+      "amount": "2199.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": false,
+      "diners_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 1,
+      "line_1": "goods",
+      "line_2": "goods"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {
+          "text": "Laptopveske 15,6\", grå",
+          "amount": "649.00",
+          "category": "goods",
+          "saft_code": "1"
+        },
+        {
+          "text": "Hodetelefoner trådløse, aktiv støydemping, svart",
+          "amount": "2199.00",
+          "category": "goods",
+          "saft_code": "1"
+        }
+      ],
+      "totals_by_code": {
+        "1": "2848.00"
+      },
+      "needs_review": false
+    }
+  },
+  "ambiguous": [
+    "line_2: headphones are work equipment by the stated purpose, but a reader could call them private_item (entertainment for the traveller)"
+  ]
+}

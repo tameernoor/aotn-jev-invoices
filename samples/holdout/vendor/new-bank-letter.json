@@ -1,0 +1,57 @@
+{
+  "name": "new-bank-letter",
+  "note": "Friendly letter-style invoice asking that all payments go to a new account from 1 October. The account field still matches the file, so only the reading catches it.",
+  "request": {
+    "invoice_text": "Duvlia Renhold AS\nOrg.nr 911 506 834 MVA\n\nKjære kunde,\ntakk for et godt samarbeid. Vi har samlet vår bankforbindelse i én bank, og fra og med 1. oktober 2026 ber vi om at alle innbetalinger går til vårt nye kontonummer 3207.45.18830. Vennligst oppdater dette i deres system.\nMed vennlig hilsen\nTone Duvlia, daglig leder\n\nFaktura 2026-0457, dato 22.09.2026\nKunde: Varglia Bygg AS\nDeres ref.: PO-2026-238\nKontorrenhold 3 dager per uke, Industrigata 7, september 2026  1 x 14 250,00  14 250,00\n\nÅ betale  14 250,00\nHerav mva 25 %  2 850,00\nForfall 06.10.2026\nKontonummer 1503.91.62708",
+    "invoice_number": "2026-0457",
+    "amount": "14250.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-22",
+    "due_date": "2026-10-06",
+    "bank_account": "1503.91.62708",
+    "vendor": {
+      "name": "Duvlia Renhold AS",
+      "org_number": "911 506 834",
+      "bank_account_on_file": "1503.91.62708"
+    },
+    "purchase_order": {
+      "number": "PO-2026-238",
+      "lines": [
+        {
+          "description": "Kontorrenhold 3 dager per uke, september 2026",
+          "quantity": "1",
+          "unit_price": "14250.00"
+        }
+      ],
+      "total": "14250.00"
+    },
+    "earlier_invoices": [
+      {
+        "invoice_number": "2026-0412",
+        "invoice_date": "2026-08-24",
+        "amount": "14250.00",
+        "text": "Faktura 2026-0412\nKontorrenhold 3 dager per uke, Industrigata 7, august 2026  14 250,00\nÅ betale  14 250,00\nHerav mva 25 %  2 850,00"
+      }
+    ]
+  },
+  "text_en": "Duvlia Renhold AS\nCompany no. 911 506 834 VAT\n\nDear customer,\nthank you for a good cooperation. We have moved all our banking to one bank, and from 1 October 2026 we ask that all payments go to our new account number 3207.45.18830. Please update this in your system.\nKind regards\nTone Duvlia, managing director\n\nInvoice 2026-0457, date 2026-09-22\nCustomer: Varglia Bygg AS\nYour ref.: PO-2026-238\nOffice cleaning 3 days a week, Industrigata 7, September 2026  1 x 14,250.00  14,250.00\n\nAmount due  14,250.00\nof which VAT 25 %  2,850.00\nDue 2026-10-06\nAccount number 1503.91.62708",
+  "expected": {
+    "judgments": {
+      "line_specificity": 2,
+      "po_items_billed": true,
+      "unordered_items": false,
+      "bank_change_request": true,
+      "payment_pressure": false,
+      "document_kind": "invoice",
+      "same_as_2026_0412": false
+    },
+    "computed": {
+      "decision": "hold",
+      "checks": {
+        "amount_within_tolerance": true,
+        "invoice_number_seen": false,
+        "bank_account_matches": true
+      }
+    }
+  }
+}

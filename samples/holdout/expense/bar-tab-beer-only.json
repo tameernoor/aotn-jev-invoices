@@ -1,0 +1,67 @@
+{
+  "name": "bar-tab-beer-only",
+  "note": "Six beers and no food. Read literally, several drinks alone do not show more than one person, so no hospitality flag.",
+  "request": {
+    "invoice_text": "Humlekrana Bar AS\nOrg.nr 924 719 580 MVA\nBong 4417  Bord 3\n18.09.2026 19:26\n\n4 x Pils 0,5 l  4 x 109,00  436,00\n2 x IPA 0,4 l  2 x 128,00  256,00\n\nSum  692,00\nHerav mva 25 %  138,40\nKort ****5093",
+    "lines": [
+      {
+        "text": "4 x Pils 0,5 l",
+        "amount": "436.00"
+      },
+      {
+        "text": "2 x IPA 0,4 l",
+        "amount": "256.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Afterwork med kollegaer"
+  },
+  "text_en": "Humlekrana Bar AS\nCompany no. 924 719 580 VAT\nTab 4417  Table 3\n2026-09-18 19:26\n\n4 x Lager 0.5 l  4 x 109.00  436.00\n2 x IPA 0.4 l  2 x 128.00  256.00\n\nTotal  692.00\nof which VAT 25 %  138.40\nCard ****5093",
+  "lines_en": [
+    {
+      "text": "4 x Lager 0.5 l",
+      "amount": "436.00"
+    },
+    {
+      "text": "2 x IPA 0.4 l",
+      "amount": "256.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": false,
+      "diners_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 1,
+      "line_1": "alcohol",
+      "line_2": "alcohol"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {
+          "text": "4 x Pils 0,5 l",
+          "amount": "436.00",
+          "category": "alcohol",
+          "saft_code": "0"
+        },
+        {
+          "text": "2 x IPA 0,4 l",
+          "amount": "256.00",
+          "category": "alcohol",
+          "saft_code": "0"
+        }
+      ],
+      "totals_by_code": {
+        "0": "692.00"
+      },
+      "needs_review": false
+    }
+  },
+  "ambiguous": [
+    "food_for_several: six beers suggest a group, but the criteria say several drinks alone do not show more than one person",
+    "purpose_detail: 'after-work with colleagues' is more than one word but not really a kind of work; 0 would send it to review, 1 does not"
+  ]
+}

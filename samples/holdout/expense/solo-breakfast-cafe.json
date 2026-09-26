@@ -1,0 +1,63 @@
+{
+  "name": "solo-breakfast-cafe",
+  "note": "One coffee and one croissant eaten in: one person, nothing to flag.",
+  "request": {
+    "invoice_text": "Grynkorn Kafé AS\nOrg.nr 918 204 773 MVA\nKasse 1  Kvittering 3391\n23.09.2026 07:41\nSpis her\n\nCappuccino, stor  58,00\nCroissant med ost og skinke  72,00\n\nSum  130,00\nHerav mva 25 %  26,00\nKort: BankAxept ****6120",
+    "lines": [
+      {
+        "text": "Cappuccino, stor",
+        "amount": "58.00"
+      },
+      {
+        "text": "Croissant med ost og skinke",
+        "amount": "72.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Frokost under tjenestereise til Drammen"
+  },
+  "text_en": "Grynkorn Kafé AS\nCompany no. 918 204 773 VAT\nTill 1  Receipt 3391\n2026-09-23 07:41\nEat in\n\nCappuccino, large  58.00\nCroissant with cheese and ham  72.00\n\nTotal  130.00\nof which VAT 25 %  26.00\nCard: BankAxept ****6120",
+  "lines_en": [
+    {
+      "text": "Cappuccino, large",
+      "amount": "58.00"
+    },
+    {
+      "text": "Croissant with cheese and ham",
+      "amount": "72.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": false,
+      "diners_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 1,
+      "line_1": "served_food",
+      "line_2": "served_food"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {
+          "text": "Cappuccino, stor",
+          "amount": "58.00",
+          "category": "served_food",
+          "saft_code": "0"
+        },
+        {
+          "text": "Croissant med ost og skinke",
+          "amount": "72.00",
+          "category": "served_food",
+          "saft_code": "0"
+        }
+      ],
+      "totals_by_code": {
+        "0": "130.00"
+      },
+      "needs_review": false
+    }
+  }
+}

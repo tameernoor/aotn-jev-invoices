@@ -1,0 +1,81 @@
+{
+  "name": "team-dinner-department",
+  "note": "Dinner for six with wine. The purpose names a group (the department), which the diners question counts as named.",
+  "request": {
+    "invoice_text": "Restaurant Sjøkvernet AS\nOrg.nr 921 557 340 MVA\nRegning nr 7730, bord 12\n10.09.2026 21:37\n\n6 x Treretters meny  6 x 695,00  4 170,00\n3 x Flaske Rioja Crianza  3 x 690,00  2 070,00\n6 x Kaffe  6 x 45,00  270,00\n\nTotalt  6 510,00\nHerav mva 25 %  1 302,00\nBetalt med firmakort Mastercard ****2208",
+    "lines": [
+      {
+        "text": "6 x Treretters meny",
+        "amount": "4170.00"
+      },
+      {
+        "text": "3 x Flaske Rioja Crianza",
+        "amount": "2070.00"
+      },
+      {
+        "text": "6 x Kaffe",
+        "amount": "270.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Middag for avdelingen etter budsjettseminaret"
+  },
+  "text_en": "Restaurant Sjøkvernet AS\nCompany no. 921 557 340 VAT\nBill no. 7730, table 12\n2026-09-10 21:37\n\n6 x Three-course menu  6 x 695.00  4,170.00\n3 x Bottle Rioja Crianza  3 x 690.00  2,070.00\n6 x Coffee  6 x 45.00  270.00\n\nTotal  6,510.00\nof which VAT 25 %  1,302.00\nPaid with company card Mastercard ****2208",
+  "lines_en": [
+    {
+      "text": "6 x Three-course menu",
+      "amount": "4170.00"
+    },
+    {
+      "text": "3 x Bottle Rioja Crianza",
+      "amount": "2070.00"
+    },
+    {
+      "text": "6 x Coffee",
+      "amount": "270.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": true,
+      "diners_named": true,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 2,
+      "line_1": "served_food",
+      "line_2": "alcohol",
+      "line_3": "served_food"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {
+          "text": "6 x Treretters meny",
+          "amount": "4170.00",
+          "category": "served_food",
+          "saft_code": "0"
+        },
+        {
+          "text": "3 x Flaske Rioja Crianza",
+          "amount": "2070.00",
+          "category": "alcohol",
+          "saft_code": "0"
+        },
+        {
+          "text": "6 x Kaffe",
+          "amount": "270.00",
+          "category": "served_food",
+          "saft_code": "0"
+        }
+      ],
+      "totals_by_code": {
+        "0": "6510.00"
+      },
+      "needs_review": false
+    }
+  },
+  "ambiguous": [
+    "purpose_detail: 'the department after the budget seminar' names a group and an event but not which; 1 or 2 (outcome is the same)"
+  ]
+}

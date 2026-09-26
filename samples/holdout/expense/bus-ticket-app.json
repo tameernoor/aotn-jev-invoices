@@ -1,0 +1,48 @@
+{
+  "name": "bus-ticket-app",
+  "note": "Single bus ticket bought in an app. Easy transport case.",
+  "request": {
+    "invoice_text": "Bysnor Kollektiv AS\nOrg.nr 922 105 894 MVA\nKvittering – kjøpt i appen\nOrdre 88213904\nKjøpt 23.09.2026 07:52\n\nEnkeltbillett voksen, sone 1, gyldig 90 min  44,00\n\nTotalt  44,00\nHerav mva 12 %  4,71\nBetalt med Vipps",
+    "lines": [
+      {
+        "text": "Enkeltbillett voksen, sone 1, gyldig 90 min",
+        "amount": "44.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Reise til kundemøte"
+  },
+  "text_en": "Bysnor Kollektiv AS\nCompany no. 922 105 894 VAT\nReceipt – bought in the app\nOrder 88213904\nBought 2026-09-23 07:52\n\nSingle ticket adult, zone 1, valid 90 min  44.00\n\nTotal  44.00\nof which VAT 12 %  4.71\nPaid with Vipps",
+  "lines_en": [
+    {
+      "text": "Single ticket adult, zone 1, valid 90 min",
+      "amount": "44.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": false,
+      "diners_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 1,
+      "line_1": "transport"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {
+          "text": "Enkeltbillett voksen, sone 1, gyldig 90 min",
+          "amount": "44.00",
+          "category": "transport",
+          "saft_code": "13"
+        }
+      ],
+      "totals_by_code": {
+        "13": "44.00"
+      },
+      "needs_review": false
+    }
+  }
+}

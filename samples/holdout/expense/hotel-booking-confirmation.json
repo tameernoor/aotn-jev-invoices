@@ -1,0 +1,48 @@
+{
+  "name": "hotel-booking-confirmation",
+  "note": "A hotel booking confirmation, to be paid on arrival, submitted instead of a receipt. Not valid documentation.",
+  "request": {
+    "invoice_text": "Hotell Skarvebu AS\nOrg.nr 915 863 327 MVA\nBestillingsbekreftelse\nBestillingsnummer 5520-8841\nGjest: Ingrid Tveitane\nAnkomst 06.10.2026  Avreise 08.10.2026\n\nDobbeltrom til enkeltbruk inkl. frokost, 2 netter  2 x 1 590,00  3 180,00\n\nTotalpris  3 180,00\nHerav mva 12 %  340,71\nBetales ved ankomst på hotellet.\nGratis avbestilling til 04.10.2026 kl. 18.00.",
+    "lines": [
+      {
+        "text": "Dobbeltrom til enkeltbruk inkl. frokost, 2 netter",
+        "amount": "3180.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Overnatting under Nordisk innkjøpskonferanse 2026"
+  },
+  "text_en": "Hotell Skarvebu AS\nCompany no. 915 863 327 VAT\nBooking confirmation\nBooking number 5520-8841\nGuest: Ingrid Tveitane\nArrival 2026-10-06  Departure 2026-10-08\n\nDouble room for single use incl. breakfast, 2 nights  2 x 1,590.00  3,180.00\n\nTotal price  3,180.00\nof which VAT 12 %  340.71\nPayable on arrival at the hotel.\nFree cancellation until 2026-10-04 at 18:00.",
+  "lines_en": [
+    {
+      "text": "Double room for single use incl. breakfast, 2 nights",
+      "amount": "3180.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": false,
+      "diners_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "booking_confirmation",
+      "purpose_detail": 2,
+      "line_1": "lodging"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {
+          "text": "Dobbeltrom til enkeltbruk inkl. frokost, 2 netter",
+          "amount": "3180.00",
+          "category": "lodging",
+          "saft_code": "13"
+        }
+      ],
+      "totals_by_code": {
+        "13": "3180.00"
+      },
+      "needs_review": true
+    }
+  }
+}

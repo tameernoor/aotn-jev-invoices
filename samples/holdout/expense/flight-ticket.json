@@ -1,0 +1,63 @@
+{
+  "name": "flight-ticket",
+  "note": "Domestic return flight with a booking fee on the ticket. Both lines are transport at the low rate.",
+  "request": {
+    "invoice_text": "Fjordvinge Air AS\nOrg.nr 926 031 158 MVA\nKvittering for billettkjøp\nBestillingsreferanse K7QRTM\nPassasjer: Vidar Hjelmeland\nReise: Oslo (OSL) – Tromsø (TOS) 22.09.2026, retur 24.09.2026\n\nFlybillett tur/retur, 1 voksen, Lett  2 380,00\nBestillingsgebyr  99,00\n\nSum  2 479,00\nHerav mva 12 %  265,61\nBetalt med Mastercard ****0932, 18.09.2026",
+    "lines": [
+      {
+        "text": "Flybillett tur/retur, 1 voksen, Lett",
+        "amount": "2380.00"
+      },
+      {
+        "text": "Bestillingsgebyr",
+        "amount": "99.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Prosjektmøte i Tromsø om ny lagerløsning"
+  },
+  "text_en": "Fjordvinge Air AS\nCompany no. 926 031 158 VAT\nReceipt for ticket purchase\nBooking reference K7QRTM\nPassenger: Vidar Hjelmeland\nTrip: Oslo (OSL) – Tromsø (TOS) 2026-09-22, return 2026-09-24\n\nFlight ticket return, 1 adult, Light  2,380.00\nBooking fee  99.00\n\nTotal  2,479.00\nof which VAT 12 %  265.61\nPaid with Mastercard ****0932, 2026-09-18",
+  "lines_en": [
+    {
+      "text": "Flight ticket return, 1 adult, Light",
+      "amount": "2380.00"
+    },
+    {
+      "text": "Booking fee",
+      "amount": "99.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": false,
+      "diners_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 2,
+      "line_1": "transport",
+      "line_2": "transport"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {
+          "text": "Flybillett tur/retur, 1 voksen, Lett",
+          "amount": "2380.00",
+          "category": "transport",
+          "saft_code": "13"
+        },
+        {
+          "text": "Bestillingsgebyr",
+          "amount": "99.00",
+          "category": "transport",
+          "saft_code": "13"
+        }
+      ],
+      "totals_by_code": {
+        "13": "2479.00"
+      },
+      "needs_review": false
+    }
+  }
+}

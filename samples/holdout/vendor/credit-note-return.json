@@ -1,0 +1,61 @@
+{
+  "name": "credit-note-return",
+  "note": "Credit note for two returned chairs, referring to the original invoice by number.",
+  "request": {
+    "invoice_text": "Sølvhei Kontormøbler AS\nOrg.nr 912 963 579 MVA\nKREDITNOTA 90218, dato 24.09.2026\nKunde: Varglia Bygg AS\nDeres ordre: PO-2026-219\nGjelder faktura 90177 av 10.09.2026\n\nRetur: Kontorstol Flex, blå  2 x -3 190,00  -6 380,00\nÅrsak: feil farge levert, returnert 21.09.2026\n\nTil gode  -6 380,00\nHerav mva 25 %  -1 276,00\nBeløpet motregnes neste faktura.\nKontonummer 1590.33.08264",
+    "invoice_number": "90218",
+    "amount": "-6380.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-24",
+    "due_date": "2026-09-24",
+    "bank_account": "1590.33.08264",
+    "vendor": {
+      "name": "Sølvhei Kontormøbler AS",
+      "org_number": "912 963 579",
+      "bank_account_on_file": "1590.33.08264"
+    },
+    "purchase_order": {
+      "number": "PO-2026-219",
+      "lines": [
+        {
+          "description": "Kontorstol Flex, blå",
+          "quantity": "10",
+          "unit_price": "3190.00"
+        }
+      ],
+      "total": "31900.00"
+    },
+    "earlier_invoices": [
+      {
+        "invoice_number": "90177",
+        "invoice_date": "2026-09-10",
+        "amount": "31900.00",
+        "text": "Faktura 90177\nKontorstol Flex, blå  10 x 3 190,00  31 900,00\nLevert 08.09.2026, pakkseddel 3321\nÅ betale  31 900,00\nHerav mva 25 %  6 380,00"
+      }
+    ]
+  },
+  "text_en": "Sølvhei Kontormøbler AS\nCompany no. 912 963 579 VAT\nCREDIT NOTE 90218, date 2026-09-24\nCustomer: Varglia Bygg AS\nYour order: PO-2026-219\nConcerns invoice 90177 of 2026-09-10\n\nReturn: Office chair Flex, blue  2 x -3,190.00  -6,380.00\nReason: wrong colour delivered, returned 2026-09-21\n\nCredit  -6,380.00\nof which VAT 25 %  -1,276.00\nThe amount will be offset against the next invoice.\nAccount number 1590.33.08264",
+  "expected": {
+    "judgments": {
+      "line_specificity": 2,
+      "po_items_billed": true,
+      "unordered_items": false,
+      "bank_change_request": false,
+      "payment_pressure": false,
+      "document_kind": "credit_note",
+      "same_as_90177": true
+    },
+    "computed": {
+      "decision": "review",
+      "checks": {
+        "amount_within_tolerance": false,
+        "invoice_number_seen": false,
+        "bank_account_matches": true
+      }
+    }
+  },
+  "ambiguous": [
+    "po_items_billed: the line names a PO item but credits it rather than charging for it",
+    "same_as_90177: the credit note refers to 90177 by number (criteria say yes), but it does not charge for the goods again"
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "name": "account-statement",
+  "note": "Statement of two open invoices, for information only. It lists earlier invoices by number but charges nothing new.",
+  "request": {
+    "invoice_text": "Fagerknoll Trykkeri AS\nOrg.nr 928 140 692 MVA\nKONTOUTSKRIFT per 25.09.2026\nKunde: Varglia Bygg AS, kundenr. 20488\n\nÅpne poster:\nFaktura 24466  28.08.2026  forfall 27.09.2026  12 500,00\nFaktura 24501  11.09.2026  forfall 11.10.2026  4 375,00\n\nSaldo  16 875,00\nDenne kontoutskriften er kun til informasjon. Betal etter den enkelte faktura.\nKontonummer 1720.58.40913",
+    "invoice_number": "KU-2026-0925",
+    "amount": "16875.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-25",
+    "due_date": "2026-10-11",
+    "bank_account": "1720.58.40913",
+    "vendor": {
+      "name": "Fagerknoll Trykkeri AS",
+      "org_number": "928 140 692",
+      "bank_account_on_file": "1720.58.40913"
+    },
+    "purchase_order": {
+      "number": "PO-2026-201",
+      "lines": [
+        {
+          "description": "Brosjyre A4, 8 sider, 2 000 stk",
+          "quantity": "1",
+          "unit_price": "12500.00"
+        },
+        {
+          "description": "Visittkort, 250 stk per navn",
+          "quantity": "5",
+          "unit_price": "875.00"
+        }
+      ],
+      "total": "16875.00"
+    },
+    "earlier_invoices": [
+      {
+        "invoice_number": "24466",
+        "invoice_date": "2026-08-28",
+        "amount": "12500.00",
+        "text": "Faktura 24466\nBrosjyre A4, 8 sider, 2 000 stk  12 500,00\nLevert 26.08.2026\nÅ betale  12 500,00\nHerav mva 25 %  2 500,00"
+      },
+      {
+        "invoice_number": "24501",
+        "invoice_date": "2026-09-11",
+        "amount": "4375.00",
+        "text": "Faktura 24501\nVisittkort, 250 stk per navn  5 x 875,00  4 375,00\nLevert 09.09.2026\nÅ betale  4 375,00\nHerav mva 25 %  875,00"
+      }
+    ]
+  },
+  "text_en": "Fagerknoll Trykkeri AS\nCompany no. 928 140 692 VAT\nACCOUNT STATEMENT as of 2026-09-25\nCustomer: Varglia Bygg AS, customer no. 20488\n\nOpen items:\nInvoice 24466  2026-08-28  due 2026-09-27  12,500.00\nInvoice 24501  2026-09-11  due 2026-10-11  4,375.00\n\nBalance  16,875.00\nThis statement is for information only. Pay according to each invoice.\nAccount number 1720.58.40913",
+  "expected": {
+    "judgments": {
+      "line_specificity": 0,
+      "po_items_billed": false,
+      "unordered_items": false,
+      "bank_change_request": false,
+      "payment_pressure": false,
+      "document_kind": "account_statement",
+      "same_as_24466": true,
+      "same_as_24501": true
+    },
+    "computed": {
+      "decision": "review",
+      "checks": {
+        "amount_within_tolerance": true,
+        "invoice_number_seen": false,
+        "bank_account_matches": true
+      }
+    }
+  },
+  "ambiguous": [
+    "line_specificity: no line charges for goods; the lines are invoice references, read as generic (0)",
+    "po_items_billed: no goods are named at all, so no",
+    "same_as_24466 / same_as_24501: listed by number (criteria say yes), though the statement charges nothing new"
+  ]
+}

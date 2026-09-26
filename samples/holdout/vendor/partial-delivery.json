@@ -1,0 +1,67 @@
+{
+  "name": "partial-delivery",
+  "note": "First part of a three-line order: chairs and monitor arms delivered, desks follow. Descriptions match, but the amount is far below the PO total.",
+  "request": {
+    "invoice_text": "Ravnkleiv Kontorinnredning AS\nOrg.nr 916 027 459 MVA\nFaktura 70412, dato 22.09.2026\nKunde: Varglia Bygg AS\nDeres bestilling: PO-2026-244\n\nKontorstol Ergo 300, sort  8 x 4 250,00  34 000,00\nSkjermarm dobbel  8 x 1 150,00  9 200,00\nDelleveranse 1 av 2, levert 18.09.2026, pakkseddel 88120.\nHev/senk-skrivebord leveres uke 42 og faktureres ved levering.\n\nÅ betale  43 200,00\nHerav mva 25 %  8 640,00\nBetalingsbetingelser 30 dager netto, forfall 22.10.2026\nKonto 1644.20.93817",
+    "invoice_number": "70412",
+    "amount": "43200.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-22",
+    "due_date": "2026-10-22",
+    "bank_account": "1644.20.93817",
+    "vendor": {
+      "name": "Ravnkleiv Kontorinnredning AS",
+      "org_number": "916 027 459",
+      "bank_account_on_file": "1644.20.93817"
+    },
+    "purchase_order": {
+      "number": "PO-2026-244",
+      "lines": [
+        {
+          "description": "Kontorstol Ergo 300, sort",
+          "quantity": "8",
+          "unit_price": "4250.00"
+        },
+        {
+          "description": "Hev/senk-skrivebord 160x80, hvit",
+          "quantity": "8",
+          "unit_price": "6900.00"
+        },
+        {
+          "description": "Skjermarm dobbel",
+          "quantity": "8",
+          "unit_price": "1150.00"
+        }
+      ],
+      "total": "98400.00"
+    },
+    "earlier_invoices": [
+      {
+        "invoice_number": "70355",
+        "invoice_date": "2026-08-28",
+        "amount": "15960.00",
+        "text": "Faktura 70355\nMøteromsstol Tind, grå  12 x 1 330,00  15 960,00\nLevert 26.08.2026, pakkseddel 87904\nÅ betale  15 960,00\nHerav mva 25 %  3 192,00"
+      }
+    ]
+  },
+  "text_en": "Ravnkleiv Kontorinnredning AS\nCompany no. 916 027 459 VAT\nInvoice 70412, date 2026-09-22\nCustomer: Varglia Bygg AS\nYour order: PO-2026-244\n\nOffice chair Ergo 300, black  8 x 4,250.00  34,000.00\nDual monitor arm  8 x 1,150.00  9,200.00\nPartial delivery 1 of 2, delivered 2026-09-18, packing slip 88120.\nSit/stand desks will be delivered in week 42 and invoiced on delivery.\n\nAmount due  43,200.00\nof which VAT 25 %  8,640.00\nPayment terms 30 days net, due 2026-10-22\nAccount 1644.20.93817",
+  "expected": {
+    "judgments": {
+      "line_specificity": 2,
+      "po_items_billed": true,
+      "unordered_items": false,
+      "bank_change_request": false,
+      "payment_pressure": false,
+      "document_kind": "invoice",
+      "same_as_70355": false
+    },
+    "computed": {
+      "decision": "review",
+      "checks": {
+        "amount_within_tolerance": false,
+        "invoice_number_seen": false,
+        "bank_account_matches": true
+      }
+    }
+  }
+}

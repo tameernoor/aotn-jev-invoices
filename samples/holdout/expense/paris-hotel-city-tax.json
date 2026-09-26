@@ -1,0 +1,93 @@
+{
+  "name": "paris-hotel-city-tax",
+  "note": "Paris hotel bill with taxe de séjour, a dinner and two glasses of wine. Foreign, so every line codes 0; the city tax line is other_cost.",
+  "request": {
+    "invoice_text": "Hôtel des Tilleuls Bleus\nParis\nSIRET 812 406 339 00017\nFacture n° 2026-08713\nClient : Vidar Hjelmeland\nArrivée 14/09/2026  Départ 16/09/2026\n\nChambre double usage single, 2 nuits  2 x 184,00  368,00\nTaxe de séjour, 2 nuits  2 x 5,20  10,40\nRestaurant, dîner 15/09  46,00\nVin rouge, 2 verres  18,00\n\nTVA 10 %  base HT 376,36  TVA 37,64\nTVA 20 %  base HT 15,00  TVA 3,00\nTaxe de séjour non soumise à TVA  10,40\nTotal TTC  442,40 EUR\nPayé par carte le 16/09/2026",
+    "lines": [
+      {
+        "text": "Chambre double usage single, 2 nuits",
+        "amount": "368.00"
+      },
+      {
+        "text": "Taxe de séjour, 2 nuits",
+        "amount": "10.40"
+      },
+      {
+        "text": "Restaurant, dîner 15/09",
+        "amount": "46.00"
+      },
+      {
+        "text": "Vin rouge, 2 verres",
+        "amount": "18.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "FR",
+    "expense_purpose": "Tjenestereise til Paris, forhandlingsmøte med leverandør"
+  },
+  "text_en": "Hôtel des Tilleuls Bleus\nParis\nSIRET 812 406 339 00017\nInvoice no. 2026-08713\nGuest: Vidar Hjelmeland\nArrival 2026-09-14  Departure 2026-09-16\n\nDouble room for single use, 2 nights  2 x 184.00  368.00\nCity tax, 2 nights  2 x 5.20  10.40\nRestaurant, dinner 15/09  46.00\nRed wine, 2 glasses  18.00\n\nVAT 10 %  net 376.36  VAT 37.64\nVAT 20 %  net 15.00  VAT 3.00\nCity tax not subject to VAT  10.40\nTotal incl. VAT  442.40 EUR\nPaid by card 2026-09-16",
+  "lines_en": [
+    {
+      "text": "Double room for single use, 2 nights",
+      "amount": "368.00"
+    },
+    {
+      "text": "City tax, 2 nights",
+      "amount": "10.40"
+    },
+    {
+      "text": "Restaurant, dinner 15/09",
+      "amount": "46.00"
+    },
+    {
+      "text": "Red wine, 2 glasses",
+      "amount": "18.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": false,
+      "diners_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 1,
+      "line_1": "lodging",
+      "line_2": "other_cost",
+      "line_3": "served_food",
+      "line_4": "alcohol"
+    },
+    "computed": {
+      "foreign_purchase": true,
+      "lines": [
+        {
+          "text": "Chambre double usage single, 2 nuits",
+          "amount": "368.00",
+          "category": "lodging",
+          "saft_code": "0"
+        },
+        {
+          "text": "Taxe de séjour, 2 nuits",
+          "amount": "10.40",
+          "category": "other_cost",
+          "saft_code": "0"
+        },
+        {
+          "text": "Restaurant, dîner 15/09",
+          "amount": "46.00",
+          "category": "served_food",
+          "saft_code": "0"
+        },
+        {
+          "text": "Vin rouge, 2 verres",
+          "amount": "18.00",
+          "category": "alcohol",
+          "saft_code": "0"
+        }
+      ],
+      "totals_by_code": {
+        "0": "442.40"
+      },
+      "needs_review": false
+    }
+  }
+}

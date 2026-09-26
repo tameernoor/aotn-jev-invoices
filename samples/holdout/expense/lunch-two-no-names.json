@@ -1,0 +1,63 @@
+{
+  "name": "lunch-two-no-names",
+  "note": "Lunch for two with a customer, but the purpose names nobody. Hospitality without names must go to review.",
+  "request": {
+    "invoice_text": "Kvitmyrsa Spiseri AS\nOrg.nr 913 482 607 MVA\nKvittering 20417\n17.09.2026 12:48  Bord 6\n\n2 x Dagens lunsj, ovnsbakt torsk  2 x 245,00  490,00\n2 x Mineralvann naturell 0,5 l  2 x 49,00  98,00\n\nSum inkl. mva  588,00\nHerav mva 25 %  117,60\nBetalt: Visa ****4471",
+    "lines": [
+      {
+        "text": "2 x Dagens lunsj, ovnsbakt torsk",
+        "amount": "490.00"
+      },
+      {
+        "text": "2 x Mineralvann naturell 0,5 l",
+        "amount": "98.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Lunsjmøte med kunde"
+  },
+  "text_en": "Kvitmyrsa Spiseri AS\nCompany no. 913 482 607 VAT\nReceipt 20417\n2026-09-17 12:48  Table 6\n\n2 x Lunch of the day, baked cod  2 x 245.00  490.00\n2 x Still mineral water 0.5 l  2 x 49.00  98.00\n\nTotal incl. VAT  588.00\nof which VAT 25 %  117.60\nPaid: Visa ****4471",
+  "lines_en": [
+    {
+      "text": "2 x Lunch of the day, baked cod",
+      "amount": "490.00"
+    },
+    {
+      "text": "2 x Still mineral water 0.5 l",
+      "amount": "98.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": true,
+      "diners_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 1,
+      "line_1": "served_food",
+      "line_2": "served_food"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {
+          "text": "2 x Dagens lunsj, ovnsbakt torsk",
+          "amount": "490.00",
+          "category": "served_food",
+          "saft_code": "0"
+        },
+        {
+          "text": "2 x Mineralvann naturell 0,5 l",
+          "amount": "98.00",
+          "category": "served_food",
+          "saft_code": "0"
+        }
+      ],
+      "totals_by_code": {
+        "0": "588.00"
+      },
+      "needs_review": true
+    }
+  }
+}

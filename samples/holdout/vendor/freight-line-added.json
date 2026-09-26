@@ -1,0 +1,54 @@
+{
+  "name": "freight-line-added",
+  "note": "Invoice adds a freight line the PO did not have; freight does not count as an unordered item and keeps the total within 2 %. 'Netto kontant' is not pressure.",
+  "request": {
+    "invoice_text": "Grimsbrå Verktøy AS\nOrg.nr 927 584 213 MVA\nFaktura 118804, dato 23.09.2026\nKunde: Varglia Bygg AS\nDeres ordre: PO-2026-252\n\nSlagdrill 18V, 2 x 5,0 Ah batteri  4 x 3 490,00  13 960,00\nBitssett 32 deler  4 x 349,00  1 396,00\nFrakt  1 x 219,00  219,00\nLevert 22.09.2026, pakkseddel 40077\n\nÅ betale  15 575,00\nHerav mva 25 %  3 115,00\nBetalingsbetingelser: netto kontant\nKontonr. 1813.07.26640",
+    "invoice_number": "118804",
+    "amount": "15575.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-23",
+    "due_date": "2026-09-23",
+    "bank_account": "1813.07.26640",
+    "vendor": {
+      "name": "Grimsbrå Verktøy AS",
+      "org_number": "927 584 213",
+      "bank_account_on_file": "1813.07.26640"
+    },
+    "purchase_order": {
+      "number": "PO-2026-252",
+      "lines": [
+        {
+          "description": "Slagdrill 18V, 2 x 5,0 Ah batteri",
+          "quantity": "4",
+          "unit_price": "3490.00"
+        },
+        {
+          "description": "Bitssett 32 deler",
+          "quantity": "4",
+          "unit_price": "349.00"
+        }
+      ],
+      "total": "15356.00"
+    },
+    "earlier_invoices": []
+  },
+  "text_en": "Grimsbrå Verktøy AS\nCompany no. 927 584 213 VAT\nInvoice 118804, date 2026-09-23\nCustomer: Varglia Bygg AS\nYour order: PO-2026-252\n\nImpact drill 18V, 2 x 5.0 Ah battery  4 x 3,490.00  13,960.00\nBit set 32 pieces  4 x 349.00  1,396.00\nFreight  1 x 219.00  219.00\nDelivered 2026-09-22, packing slip 40077\n\nAmount due  15,575.00\nof which VAT 25 %  3,115.00\nPayment terms: net cash\nAccount no. 1813.07.26640",
+  "expected": {
+    "judgments": {
+      "line_specificity": 2,
+      "po_items_billed": true,
+      "unordered_items": false,
+      "bank_change_request": false,
+      "payment_pressure": false,
+      "document_kind": "invoice"
+    },
+    "computed": {
+      "decision": "approve",
+      "checks": {
+        "amount_within_tolerance": true,
+        "invoice_number_seen": false,
+        "bank_account_matches": true
+      }
+    }
+  }
+}

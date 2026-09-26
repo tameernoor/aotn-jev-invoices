@@ -1,0 +1,54 @@
+{
+  "name": "price-five-percent-over",
+  "note": "Same items and quantities as the PO, but unit prices from a new price list put the total 5 % over.",
+  "request": {
+    "invoice_text": "Ljoskjær Belysning AS\nOrg.nr 929 275 061 MVA\nFaktura 51930, dato 24.09.2026\nKunde: Varglia Bygg AS\nDeres ordre: PO-2026-260\n\nLED-panel 60x60, 36 W, 4000 K  24 x 1 210,00  29 040,00\nNødlysarmatur med batteri  6 x 1 512,50  9 075,00\nPriser iht. prisliste per 01.09.2026\nLevert 23.09.2026, pakkseddel 61784\n\nÅ betale  38 115,00\nHerav mva 25 %  7 623,00\nForfall 24.10.2026\nKontonummer 1287.62.05519",
+    "invoice_number": "51930",
+    "amount": "38115.00",
+    "currency": "NOK",
+    "invoice_date": "2026-09-24",
+    "due_date": "2026-10-24",
+    "bank_account": "1287.62.05519",
+    "vendor": {
+      "name": "Ljoskjær Belysning AS",
+      "org_number": "929 275 061",
+      "bank_account_on_file": "1287.62.05519"
+    },
+    "purchase_order": {
+      "number": "PO-2026-260",
+      "lines": [
+        {
+          "description": "LED-panel 60x60, 36 W, 4000 K",
+          "quantity": "24",
+          "unit_price": "1150.00"
+        },
+        {
+          "description": "Nødlysarmatur med batteri",
+          "quantity": "6",
+          "unit_price": "1450.00"
+        }
+      ],
+      "total": "36300.00"
+    },
+    "earlier_invoices": []
+  },
+  "text_en": "Ljoskjær Belysning AS\nCompany no. 929 275 061 VAT\nInvoice 51930, date 2026-09-24\nCustomer: Varglia Bygg AS\nYour order: PO-2026-260\n\nLED panel 60x60, 36 W, 4000 K  24 x 1,210.00  29,040.00\nEmergency light fitting with battery  6 x 1,512.50  9,075.00\nPrices according to price list as of 2026-09-01\nDelivered 2026-09-23, packing slip 61784\n\nAmount due  38,115.00\nof which VAT 25 %  7,623.00\nDue 2026-10-24\nAccount number 1287.62.05519",
+  "expected": {
+    "judgments": {
+      "line_specificity": 2,
+      "po_items_billed": true,
+      "unordered_items": false,
+      "bank_change_request": false,
+      "payment_pressure": false,
+      "document_kind": "invoice"
+    },
+    "computed": {
+      "decision": "review",
+      "checks": {
+        "amount_within_tolerance": false,
+        "invoice_number_seen": false,
+        "bank_account_matches": true
+      }
+    }
+  }
+}

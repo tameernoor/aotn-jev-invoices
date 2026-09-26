@@ -1,0 +1,63 @@
+{
+  "name": "ferry-car-and-passenger",
+  "note": "Ferry ticket for a car with driver plus one passenger. Vehicles on road ferries take the low rate too.",
+  "request": {
+    "invoice_text": "Skjelsvikferja AS\nOrg.nr 919 442 136 MVA\nBillettkvittering\nStrekning Skjelsvik – Hamnøyra\nAvgang 25.09.2026 kl. 08.15\n\nPersonbil inntil 6 m inkl. fører  1 x 214,00  214,00\nVoksen passasjer  1 x 61,00  61,00\n\nSum  275,00\nHerav mva 12 %  29,46\nBetalt med kort ****8846",
+    "lines": [
+      {
+        "text": "Personbil inntil 6 m inkl. fører",
+        "amount": "214.00"
+      },
+      {
+        "text": "Voksen passasjer",
+        "amount": "61.00"
+      }
+    ],
+    "employee_country": "NO",
+    "vendor_country": "NO",
+    "expense_purpose": "Befaring på Hamnøyra kai for prosjekt Kaifront Nord"
+  },
+  "text_en": "Skjelsvikferja AS\nCompany no. 919 442 136 VAT\nTicket receipt\nRoute Skjelsvik – Hamnøyra\nDeparture 2026-09-25 at 08:15\n\nCar up to 6 m incl. driver  1 x 214.00  214.00\nAdult passenger  1 x 61.00  61.00\n\nTotal  275.00\nof which VAT 12 %  29.46\nPaid by card ****8846",
+  "lines_en": [
+    {
+      "text": "Car up to 6 m incl. driver",
+      "amount": "214.00"
+    },
+    {
+      "text": "Adult passenger",
+      "amount": "61.00"
+    }
+  ],
+  "expected": {
+    "judgments": {
+      "food_for_several": false,
+      "diners_named": false,
+      "purpose_fits_receipt": true,
+      "receipt_kind": "proof_of_purchase",
+      "purpose_detail": 2,
+      "line_1": "transport",
+      "line_2": "transport"
+    },
+    "computed": {
+      "foreign_purchase": false,
+      "lines": [
+        {
+          "text": "Personbil inntil 6 m inkl. fører",
+          "amount": "214.00",
+          "category": "transport",
+          "saft_code": "13"
+        },
+        {
+          "text": "Voksen passasjer",
+          "amount": "61.00",
+          "category": "transport",
+          "saft_code": "13"
+        }
+      ],
+      "totals_by_code": {
+        "13": "275.00"
+      },
+      "needs_review": false
+    }
+  }
+}
