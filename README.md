@@ -48,7 +48,36 @@ What was bought is not asked at invoice level. Each line in the request gets its
 | `payment_pressure` | noul | Urgent or threatening language pushing to skip the normal approval. |
 | `document_kind` | choice | A reminder, credit note or statement sent in as if it were a fresh invoice. |
 
-Vendor invoices also get one generated yes/no question per earlier invoice, asking whether it is the same delivery as invoice X; code builds these at request time, one only for each earlier invoice dated inside the 60-day resend window.
+Vendor invoices also get generated yes/no questions asking whether this is the same delivery as invoice X. Code builds one for each earlier invoice dated inside the 60-day resend window, at request time.
+
+## What one request looks like
+
+Take `samples/expense/hotel-oslo-minibar.json`: a hotel invoice with two lines, a room and a minibar beer. One request goes to Jev with the receipt text, the countries and the stated purpose as `state`, and seven questions:
+
+| # | id | type | question |
+|---|---|---|---|
+| 1 | `hosted_guests` | noul | Did this expense pay for guests from outside the company? |
+| 2 | `guests_named` | noul | Does the purpose name the guests or their company? |
+| 3 | `purpose_fits_receipt` | noul | Do most of the lines fit the stated purpose? |
+| 4 | `receipt_kind` | choice | Proof of purchase, card slip, booking confirmation or other? |
+| 5 | `purpose_detail` | score | How specific is the purpose? |
+| 6 | `line_1` | choice | What kind of purchase is "Overnatting enkeltrom, 2 netter"? |
+| 7 | `line_2` | choice | What kind of purchase is "Minibar: Pils 0,33 l"? |
+
+Jev answered them together in about 0.3 seconds. The rules then coded the room 13 and the beer 0 (alcohol, no deduction), with totals of 2,900.00 and 89.00. `guests_named` was answered but never read, because no guests were hosted.
+
+Questions 1 to 5 are the same for every expense invoice. The line questions follow the receipt, so a taxi receipt with one line sends six questions and a dinner with three lines sends eight. A vendor invoice sends six fixed questions plus one duplicate question per recent earlier invoice.
+
+## Measured
+
+Against `jev-1.13.0`, over the 16 samples in Norwegian and in English:
+
+- 0.24 to 0.36 seconds per invoice (mean about 0.29), almost all of it the Jev call. The rules and storage add a few milliseconds.
+- About 900 to 2,100 input tokens per invoice, depending on the number of lines and earlier invoices, which is $0.00004 to $0.00009 at Jev's input price.
+- 110 of 112 answers on the right side of the app's thresholds in both languages, none on the wrong side. The two uncertain answers belong to questions the rules never read for that invoice.
+- The rules produced every sample's expected result in both languages.
+
+Answers close to a threshold can flip between runs. A taxi receipt once landed at 0.79 on `purpose_fits_receipt`, just under the 0.8 needed for a yes, and went to review.
 
 ## Run it
 
@@ -95,7 +124,7 @@ The answer is stored with the record. No rule reads it until someone writes one.
 
 ## What gets stored
 
-Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `judgments` (what Jev answered) apart from `computed` (what the code decided), and `jev` holds the model version, latency, input tokens and cost. The price per million tokens is stored next to the cost, because one invoice costs about $0.00006 at roughly 1,500 input tokens, measured with the bench.
+Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `judgments` (what Jev answered) apart from `computed` (what the code decided), and `jev` holds the model version, latency, input tokens and cost. The price per million tokens is stored next to the cost, because one invoice costs a small fraction of a cent (see Measured).
 
 ## Language bench
 
