@@ -61,13 +61,14 @@ def merge_questions(base: dict[str, dict], extra: dict | None) -> dict[str, dict
 
 LINE_QUESTION = "What kind of purchase is `line`?"
 LINE_CRITERIA = {
-    "lodging": "A night of accommodation, such as a hotel room.",
-    "served_food": "Food or a non-alcoholic drink served to eat or drink on the spot, such as a meal, coffee or room service.",
+    "lodging": "One or more nights of accommodation, such as a hotel room. A room with breakfast on one line counts as lodging. A meeting room does not.",
+    "served_food": "Food or a non-alcoholic drink to eat or drink right away, such as a meal, coffee, room service, takeaway food, or snacks and soft drinks from a minibar.",
     "alcohol": "An alcoholic drink, such as beer, wine, cider or spirits, including from a minibar.",
-    "transport": "A ride or a ticket that carries a person, such as a taxi, train, bus, ferry or flight.",
+    "transport": "A ride or a ticket that carries a person, such as a taxi, train, bus, ferry or flight, including a booking fee on the ticket.",
     "goods": "An item for work to take away, such as equipment or office supplies.",
-    "private_item": "An item for private use, such as clothing, cosmetics, perfume, toiletries, jewellery, toys or entertainment.",
-    "other": "Anything else, such as a fee, a deposit or parking.",
+    "private_item": "An item for the traveller's private use, such as clothing, cosmetics, perfume, toiletries, jewellery, toys, or films and other entertainment for the traveller.",
+    "other_cost": "Another known cost, such as parking, fuel, car rental, a toll, a tip, a fee, a deposit, city tax or a rounding line.",
+    "unclear": "The line does not say what was bought.",
 }
 
 
