@@ -53,8 +53,11 @@ def test_dinner_with_named_guests_is_entertainment_and_flag_free():
         guests_named=0.95,
     )
     assert [line["saft_code"] for line in result["lines"]] == ["0", "0", "0"]
+    assert result["totals_by_code"] == {"0": Decimal("2210.00")}
     assert any("§ 8-3 (1) e" in reason for reason in result["reasons"])
+    assert "Served food (servering): no deduction, § 8-3 (1) a." not in result["reasons"]
     assert any("§ 5-2 (3)" in reason for reason in result["reasons"])
+    assert {"line_1", "line_2", "line_3"} <= set(result["judgments_read"])
     assert result["flags"] == []
     assert result["needs_review"] is False
 
@@ -108,6 +111,8 @@ def test_other_cost_tip_is_uncoded_with_a_reason_and_no_flag():
 
 def test_unclear_line_flags():
     result = code([("???", "10.00", "unclear")])
+    assert result["lines"][0]["saft_code"] is None
+    assert result["totals_by_code"] == {}
     assert any("Could not tell what was bought" in flag for flag in result["flags"])
     assert result["needs_review"] is True
 
