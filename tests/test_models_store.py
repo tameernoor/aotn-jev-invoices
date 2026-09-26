@@ -33,18 +33,17 @@ def make_record(record_id="r1", created_at=datetime(2026, 9, 25, 12, 0, tzinfo=U
         kind="expense",
         created_at=created_at,
         input={"invoice_text": "x"},
-        judgments={"goods_charged": {"type": "noul", "value": 0.9}},
+        judgments={"line_1": {"type": "choice", "value": "goods"}},
         computed=ExpenseComputed(
-            saft_code="1",
-            should_split=False,
             foreign_purchase=False,
-            kinds=["goods"],
+            lines=[{"text": "USB-C-lader 65 W", "amount": "598.00", "category": "goods", "saft_code": "1"}],
+            totals_by_code={"1": "598.00"},
             vat_rates_found=["25"],
             needs_review=False,
             flags=[],
-            judgments_read=["goods_charged"],
+            judgments_read=["line_1"],
             uncertain=[],
-            reasons=["Goods: deductible at the regular rate (25 %)."],
+            reasons=["Goods for work: deductible at the regular rate (25 %)."],
         ),
         jev=JevMeta(
             model="fake-jev",
@@ -58,9 +57,10 @@ def make_record(record_id="r1", created_at=datetime(2026, 9, 25, 12, 0, tzinfo=U
     )
 
 
-def test_expense_state_leaves_out_extra_questions():
+def test_expense_state_leaves_out_extra_questions_and_lines():
     body = ExpenseInvoiceIn(
         invoice_text="Taxi",
+        lines=[{"text": "Tur: Oslo lufthavn - Majorstuen", "amount": "845.00"}],
         employee_country="NO",
         vendor_country="NO",
         extra_questions={"q": {"type": "noul", "instructions": "Night trip?"}},
@@ -76,6 +76,17 @@ def test_expense_state_leaves_out_extra_questions():
 def test_country_codes_must_be_two_letters():
     with pytest.raises(ValidationError):
         ExpenseInvoiceIn(invoice_text="x", employee_country="NOR", vendor_country="NO")
+
+
+def test_expense_lines_default_to_empty():
+    body = ExpenseInvoiceIn(invoice_text="x", employee_country="NO", vendor_country="NO")
+    assert body.lines == []
+
+
+def test_more_than_fifty_lines_is_rejected():
+    lines = [{"text": "x", "amount": "1.00"} for _ in range(51)]
+    with pytest.raises(ValidationError):
+        ExpenseInvoiceIn(invoice_text="x", lines=lines, employee_country="NO", vendor_country="NO")
 
 
 def test_vendor_state_holds_descriptions_not_amounts_or_accounts():
@@ -94,7 +105,7 @@ def test_store_round_trip_writes_sqlite_and_json(tmp_path):
     store.save(record)
     assert store.get("r1") == record
     written = json.loads((tmp_path / "out" / "r1.json").read_text(encoding="utf-8"))
-    assert written["computed"]["saft_code"] == "1"
+    assert written["computed"]["totals_by_code"] == {"1": "598.00"}
 
 
 def test_store_lists_newest_first_and_misses_return_none(tmp_path):

@@ -2,25 +2,24 @@ import pytest
 from pydantic import ValidationError
 
 from jev_invoices.questions import (
+    LINE_CRITERIA,
+    LINE_QUESTION,
     QuestionCollision,
     QuestionSet,
     duplicate_question_id,
     duplicate_questions,
+    expense_request_questions,
+    line_question_id,
+    line_questions,
     load_questions,
     merge_questions,
     vendor_request_questions,
 )
 
 EXPENSE_IDS = [
-    "lodging_charged",
-    "served_food_charged",
-    "alcohol_charged",
-    "transport_charged",
-    "goods_charged",
     "hosted_guests",
     "guests_named",
     "purpose_fits_receipt",
-    "personal_items",
     "receipt_kind",
     "purpose_detail",
 ]
@@ -40,8 +39,8 @@ def test_expense_questions_load_in_file_order():
     assert list(questions) == EXPENSE_IDS
     assert questions["receipt_kind"]["type"] == "choice"
     assert "other" in questions["receipt_kind"]["criteria"]
-    assert questions["alcohol_charged"]["criteria"]["true"].startswith("At least one line")
-    assert set(questions["lodging_charged"]["criteria"]) == {"true", "false"}
+    assert questions["hosted_guests"]["type"] == "noul"
+    assert set(questions["hosted_guests"]["criteria"]) == {"true", "false"}
     assert questions["purpose_detail"]["type"] == "score"
     assert len(questions["purpose_detail"]["criteria"]) == 3
 
@@ -77,9 +76,9 @@ def test_no_extra_questions_returns_a_copy_of_the_base():
 
 def test_extra_question_reusing_a_builtin_id_is_rejected():
     extra = QuestionSet.validate_python(
-        {"alcohol_charged": {"type": "noul", "instructions": "Any beer?"}}
+        {"hosted_guests": {"type": "noul", "instructions": "Any guests?"}}
     )
-    with pytest.raises(QuestionCollision, match="alcohol_charged"):
+    with pytest.raises(QuestionCollision, match="hosted_guests"):
         merge_questions(load_questions("expense"), extra)
 
 
@@ -165,3 +164,50 @@ def test_vendor_request_questions_adds_one_duplicate_question_per_earlier_invoic
     earlier = [{"invoice_number": "20877", "text": "a"}]
     merged = vendor_request_questions(base, earlier)
     assert set(merged) == set(base) | {"same_as_20877"}
+
+
+def test_line_question_id_is_one_indexed():
+    assert line_question_id(0) == "line_1"
+    assert line_question_id(4) == "line_5"
+
+
+def test_line_questions_shape_and_validity():
+    lines = [{"text": "Overnatting enkeltrom, 2 netter", "amount": "2900.00"}]
+    questions = line_questions(lines)
+    assert list(questions) == ["line_1"]
+    question = questions["line_1"]
+    assert question["type"] == "choice"
+    assert question["instructions"] == {"line": "Overnatting enkeltrom, 2 netter", "question": LINE_QUESTION}
+    assert question["criteria"] == LINE_CRITERIA
+    # Validates as a real question set.
+    QuestionSet.validate_python(questions)
+
+
+def test_line_questions_one_per_line():
+    lines = [{"text": "a", "amount": "1"}, {"text": "b", "amount": "2"}]
+    assert list(line_questions(lines)) == ["line_1", "line_2"]
+
+
+def test_line_questions_empty_lines_give_no_questions():
+    assert line_questions([]) == {}
+
+
+def test_line_questions_do_not_share_the_same_criteria_object():
+    lines = [{"text": "a", "amount": "1"}, {"text": "b", "amount": "2"}]
+    questions = line_questions(lines)
+    first = questions["line_1"]["criteria"]
+    second = questions["line_2"]["criteria"]
+    assert first == second
+    assert first is not second
+
+
+def test_expense_request_questions_with_no_lines_equals_the_base():
+    base = load_questions("expense")
+    assert expense_request_questions(base, []) == base
+
+
+def test_expense_request_questions_adds_one_question_per_line():
+    base = load_questions("expense")
+    lines = [{"text": "Leppepomade", "amount": "49.00"}]
+    merged = expense_request_questions(base, lines)
+    assert set(merged) == set(base) | {"line_1"}

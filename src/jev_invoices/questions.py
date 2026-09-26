@@ -59,6 +59,38 @@ def merge_questions(base: dict[str, dict], extra: dict | None) -> dict[str, dict
     return {**base, **_as_dicts(extra)}
 
 
+LINE_QUESTION = "What kind of purchase is `line`?"
+LINE_CRITERIA = {
+    "lodging": "A night of accommodation, such as a hotel room.",
+    "served_food": "Food or a non-alcoholic drink served to eat or drink on the spot, such as a meal, coffee or room service.",
+    "alcohol": "An alcoholic drink, such as beer, wine, cider or spirits, including from a minibar.",
+    "transport": "A ride or a ticket that carries a person, such as a taxi, train, bus, ferry or flight.",
+    "goods": "An item for work to take away, such as equipment or office supplies.",
+    "private_item": "An item for private use, such as clothing, cosmetics, perfume, toiletries, jewellery, toys or entertainment.",
+    "other": "Anything else, such as a fee, a deposit or parking.",
+}
+
+
+def line_question_id(index: int) -> str:
+    return f"line_{index + 1}"
+
+
+def line_questions(lines: list[dict]) -> dict[str, dict]:
+    """One choice per receipt line, built at request time from the lines."""
+    return {
+        line_question_id(i): {
+            "type": "choice",
+            "instructions": {"line": line["text"], "question": LINE_QUESTION},
+            "criteria": dict(LINE_CRITERIA),
+        }
+        for i, line in enumerate(lines)
+    }
+
+
+def expense_request_questions(base: dict[str, dict], lines: list[dict]) -> dict[str, dict]:
+    return merge_questions(base, line_questions(lines))
+
+
 DUPLICATE_QUESTION = (
     "Does `invoice_text` charge for the same goods or services, from the same delivery "
     "or the same period, as `earlier_invoice`?"

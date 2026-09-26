@@ -2,42 +2,7 @@
 # Ids are never sent to the model, so each instruction carries the whole question.
 # Keys "true" and "false" are quoted so YAML keeps them as strings.
 
-# What was bought. Code counts the kinds and picks the VAT code.
-
-lodging_charged:
-  type: noul
-  instructions: Does `invoice_text` charge for at least one night of accommodation, such as a hotel room?
-  criteria:
-    "true": At least one line charges for a night of accommodation.
-    "false": No night of accommodation is charged. Meeting or conference rooms and room deposits count as no.
-
-served_food_charged:
-  type: noul
-  instructions: Does `invoice_text` charge for food served to eat on the spot, such as a restaurant meal, room service or a breakfast on its own line?
-  criteria:
-    "true": At least one line names food served at a restaurant, cafe, hotel or similar, including snacks from a minibar. Judge only what the lines name, not the shop's name or `expense_purpose`. Drinks alone, including alcohol, count as no.
-    "false": No served food is charged. Groceries to take away and breakfast included in the room price without its own line count as no.
-
-alcohol_charged:
-  type: noul
-  instructions: Does `invoice_text` charge for at least one alcoholic drink?
-  criteria:
-    "true": At least one line is beer, wine, cider, spirits or another alcoholic drink, including minibar items.
-    "false": No line is an alcoholic drink.
-
-transport_charged:
-  type: noul
-  instructions: Does `invoice_text` charge for carrying a person from one place to another, such as a taxi ride or a train, bus, ferry or flight ticket?
-  criteria:
-    "true": At least one line is a ride or a ticket for a person.
-    "false": No ride or ticket is charged. Parking, fuel and car rental count as no.
-
-goods_charged:
-  type: noul
-  instructions: Does `invoice_text` charge for goods to take away, such as equipment or office supplies?
-  criteria:
-    "true": At least one line is an item the buyer takes away.
-    "false": No such item is charged. Food and drinks consumed on the spot, including the minibar, count as no.
+# What was bought is asked per line; see questions.line_questions.
 
 # Policy and documentation controls. The common expense claim problems.
 
@@ -61,13 +26,6 @@ purpose_fits_receipt:
   criteria:
     "true": The purpose describes what was bought, or the purpose does not say what was bought.
     "false": The purpose describes something clearly different from what was bought, for example a train ticket when the receipt is for a restaurant.
-
-personal_items:
-  type: noul
-  instructions: Does `invoice_text` charge for at least one item for private use?
-  criteria:
-    "true": At least one line is clothing, shoes, cosmetics, perfume, toiletries, jewellery, toys, or films or other entertainment for the traveller.
-    "false": No line is on that list.
 
 receipt_kind:
   type: choice

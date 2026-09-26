@@ -12,15 +12,21 @@ from pydantic import BaseModel, Field
 from .questions import Question
 
 
+class ReceiptLine(BaseModel):
+    text: str = Field(min_length=1)
+    amount: Decimal
+
+
 class ExpenseInvoiceIn(BaseModel):
     invoice_text: str = Field(min_length=1)
+    lines: list[ReceiptLine] = Field(default_factory=list, max_length=50)
     employee_country: str = Field(min_length=2, max_length=2, description="ISO 3166 alpha-2, e.g. NO")
     vendor_country: str = Field(min_length=2, max_length=2)
     expense_purpose: str | None = None
     extra_questions: dict[str, Question] | None = None
 
     def state(self) -> dict:
-        return self.model_dump(mode="json", exclude={"extra_questions"})
+        return self.model_dump(mode="json", exclude={"extra_questions", "lines"})
 
 
 class VendorRecord(BaseModel):
@@ -84,11 +90,17 @@ class Judgment(BaseModel):
     legend: dict[str, str] | None = None
 
 
-class ExpenseComputed(BaseModel):
+class CodedLine(BaseModel):
+    text: str
+    amount: Decimal
+    category: str
     saft_code: str | None
-    should_split: bool
+
+
+class ExpenseComputed(BaseModel):
     foreign_purchase: bool
-    kinds: list[str]
+    lines: list[CodedLine]
+    totals_by_code: dict[str, Decimal]
     vat_rates_found: list[str]
     needs_review: bool
     flags: list[str]
