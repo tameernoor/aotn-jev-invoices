@@ -17,8 +17,8 @@ from jev_invoices.questions import (
 )
 
 EXPENSE_IDS = [
-    "hosted_guests",
-    "guests_named",
+    "food_for_several",
+    "diners_named",
     "purpose_fits_receipt",
     "receipt_kind",
     "purpose_detail",
@@ -39,8 +39,8 @@ def test_expense_questions_load_in_file_order():
     assert list(questions) == EXPENSE_IDS
     assert questions["receipt_kind"]["type"] == "choice"
     assert "other" in questions["receipt_kind"]["criteria"]
-    assert questions["hosted_guests"]["type"] == "noul"
-    assert set(questions["hosted_guests"]["criteria"]) == {"true", "false"}
+    assert questions["food_for_several"]["type"] == "noul"
+    assert set(questions["food_for_several"]["criteria"]) == {"true", "false"}
     assert questions["purpose_detail"]["type"] == "score"
     assert len(questions["purpose_detail"]["criteria"]) == 3
 
@@ -76,9 +76,9 @@ def test_no_extra_questions_returns_a_copy_of_the_base():
 
 def test_extra_question_reusing_a_builtin_id_is_rejected():
     extra = QuestionSet.validate_python(
-        {"hosted_guests": {"type": "noul", "instructions": "Any guests?"}}
+        {"food_for_several": {"type": "noul", "instructions": "Food for several?"}}
     )
-    with pytest.raises(QuestionCollision, match="hosted_guests"):
+    with pytest.raises(QuestionCollision, match="food_for_several"):
         merge_questions(load_questions("expense"), extra)
 
 

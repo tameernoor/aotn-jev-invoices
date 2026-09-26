@@ -18,8 +18,8 @@ Each question targets one known expense or accounts-payable problem. Ids are nev
 
 | id | type | what it catches |
 |---|---|---|
-| `hosted_guests` | noul | Customer entertainment (representasjon), whose guests must then be named. A meal with guests gets the same VAT code as any served meal; only the reason differs. |
-| `guests_named` | noul | An entertainment claim that does not name who was hosted. |
+| `food_for_several` | noul | Food or drink for more than one person, which makes it hospitality. |
+| `diners_named` | noul | Hospitality that does not say who ate or drank, required by bokføringsforskriften § 5-10. |
 | `purpose_fits_receipt` | noul | A stated purpose that does not match what was actually bought. |
 | `receipt_kind` | choice | A document that is not valid proof of purchase, such as a card slip or a booking confirmation. |
 | `purpose_detail` | score | A purpose that is missing or too generic to justify the expense. |
@@ -56,15 +56,15 @@ Take `samples/expense/hotel-oslo-minibar.json`: a hotel invoice with two lines, 
 
 | # | id | type | asks, in short |
 |---|---|---|---|
-| 1 | `hosted_guests` | noul | Did this expense pay for guests from outside the company? |
-| 2 | `guests_named` | noul | Does the purpose name the guests or their company? |
+| 1 | `food_for_several` | noul | Does the invoice show food or drink for more than one person? |
+| 2 | `diners_named` | noul | Does the purpose say who ate or drank, by name, company or group? |
 | 3 | `purpose_fits_receipt` | noul | Do most of the lines fit the stated purpose? |
 | 4 | `receipt_kind` | choice | Proof of purchase, card slip, booking confirmation or other? |
 | 5 | `purpose_detail` | score | How specific is the purpose? |
 | 6 | `line_1` | choice | What kind of purchase is "Overnatting enkeltrom, 2 netter"? |
 | 7 | `line_2` | choice | What kind of purchase is "Minibar: Pils 0,33 l"? |
 
-Jev answered them together in about 0.3 seconds. The rules then coded the room 13 and the beer 0 (alcohol, no deduction), with totals of 2,900.00 and 89.00. `guests_named` was answered but never read, because no guests were hosted.
+Jev answered them together in about 0.3 seconds. The rules then coded the room 13 and the beer 0 (alcohol, no deduction), with totals of 2,900.00 and 89.00. `diners_named` was answered but never read, because the minibar beer was food or drink for one person, not several.
 
 Questions 1 to 5 are the same for every expense invoice. The line questions follow the receipt, so a taxi receipt with one line sends six questions and a dinner with three lines sends eight. A vendor invoice sends six fixed questions plus one duplicate question per recent earlier invoice.
 

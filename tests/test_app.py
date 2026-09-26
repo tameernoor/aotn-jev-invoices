@@ -59,10 +59,10 @@ def test_extra_question_is_answered_in_the_same_call_and_ignored_by_the_rules(ma
 
 
 def test_extra_question_reusing_a_builtin_id_is_422(make_client):
-    body = {**TAXI, "extra_questions": {"hosted_guests": {"type": "noul", "instructions": "Guests?"}}}
+    body = {**TAXI, "extra_questions": {"food_for_several": {"type": "noul", "instructions": "Food for several?"}}}
     response = make_client(FakeJev()).post("/expense-invoices", json=body)
     assert response.status_code == 422
-    assert "hosted_guests" in response.json()["detail"]
+    assert "food_for_several" in response.json()["detail"]
 
 
 def test_extra_question_reusing_a_generated_line_id_is_422(make_client):

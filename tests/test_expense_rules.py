@@ -6,8 +6,8 @@ from jev_invoices.questions import line_question_id
 from jev_invoices.rules.expense import apply_tax_rules, vat_rates_found
 
 BASE = dict(
-    hosted_guests=0.05,
-    guests_named=0.05,
+    food_for_several=0.05,
+    diners_named=0.05,
     purpose_fits_receipt=0.95,
     receipt_kind="proof_of_purchase",
     purpose_detail=level(1),
@@ -42,49 +42,74 @@ def test_hotel_and_minibar_beer_are_coded_and_totalled():
     assert result["needs_review"] is False
 
 
-def test_dinner_with_named_guests_is_entertainment_and_flag_free():
+def test_food_for_several_and_named_has_no_flag():
     result = code(
         [
             ("Hovedrett torsk", "1185.00", "served_food"),
             ("Flaske hvitvin, Chablis", "890.00", "alcohol"),
             ("Kaffe", "135.00", "served_food"),
         ],
-        hosted_guests=0.95,
-        guests_named=0.95,
+        food_for_several=0.95,
+        diners_named=0.95,
     )
     assert [line["saft_code"] for line in result["lines"]] == ["0", "0", "0"]
     assert result["totals_by_code"] == {"0": Decimal("2210.00")}
-    assert any("§ 8-3 (1) e" in reason for reason in result["reasons"])
-    assert "Served food (servering): no deduction, § 8-3 (1) a." not in result["reasons"]
     assert any("§ 5-2 (3)" in reason for reason in result["reasons"])
-    assert {"line_1", "line_2", "line_3"} <= set(result["judgments_read"])
+    assert {"line_1", "line_2", "line_3", "food_for_several", "diners_named"} <= set(result["judgments_read"])
     assert result["flags"] == []
     assert result["needs_review"] is False
 
 
-def test_dinner_with_guests_not_named_flags():
+def test_food_for_several_and_not_named_flags():
     result = code(
         [
             ("Hovedrett torsk", "1185.00", "served_food"),
             ("Flaske hvitvin, Chablis", "890.00", "alcohol"),
         ],
-        hosted_guests=0.95,
-        guests_named=0.05,
+        food_for_several=0.95,
+        diners_named=0.05,
     )
-    assert any("must name the guests" in flag for flag in result["flags"])
+    assert any(
+        "Hospitality must say who ate or drank (bokføringsforskriften § 5-10)." == flag
+        for flag in result["flags"]
+    )
     assert result["needs_review"] is True
 
 
-def test_alcohol_reason_mentions_5_2_3_regardless_of_guests():
+def test_food_for_one_does_not_read_diners_named():
+    result = code([("Lunsj", "150.00", "served_food")], diners_named=0.5)
+    assert "diners_named" not in result["judgments_read"]
+    assert result["flags"] == []
+    assert result["needs_review"] is False
+
+
+def test_no_food_or_drink_line_reads_neither_question():
+    result = code([("Tur", "845.00", "transport")], food_for_several=0.5, diners_named=0.5)
+    assert "food_for_several" not in result["judgments_read"]
+    assert "diners_named" not in result["judgments_read"]
+    assert result["needs_review"] is False
+
+
+def test_uncertain_food_for_several_on_a_meal_is_reviewed():
+    result = code([("Lunsj", "150.00", "served_food")], food_for_several=0.5)
+    assert "food_for_several" in result["uncertain"]
+    assert "diners_named" not in result["judgments_read"]
+    assert result["needs_review"] is True
+
+
+def test_alcohol_reason_mentions_5_2_3():
     result = code([("Pils", "89.00", "alcohol")])
     assert result["lines"][0]["saft_code"] == "0"
     assert any("§ 5-2 (3)" in reason for reason in result["reasons"])
 
 
-def test_meal_without_guests_is_servering_no_deduction():
-    result = code([("Lunsj", "150.00", "served_food")])
-    assert result["lines"][0]["saft_code"] == "0"
-    assert any("§ 8-3 (1) a" in reason for reason in result["reasons"])
+def test_served_food_reason_is_always_8_3_1_a():
+    result = code(
+        [("Hovedrett torsk", "1185.00", "served_food")],
+        food_for_several=0.95,
+        diners_named=0.95,
+    )
+    assert result["reasons"] == ["Served food (servering): no deduction, § 8-3 (1) a."]
 
 
 def test_goods_are_regular_rate():
@@ -176,12 +201,6 @@ def test_purpose_not_fitting_receipt_flags():
 def test_generic_purpose_detail_flags():
     result = code([("Item", "10.00", "goods")], purpose_detail=level(0))
     assert any("missing or too generic" in flag for flag in result["flags"])
-
-
-def test_guests_named_not_read_when_hosted_guests_is_no():
-    result = code([("Lunsj", "150.00", "served_food")], guests_named=0.5)
-    assert "guests_named" not in result["judgments_read"]
-    assert result["needs_review"] is False
 
 
 def test_country_codes_are_case_insensitive():

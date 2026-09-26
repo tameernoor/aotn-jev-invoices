@@ -6,19 +6,19 @@
 
 # Policy and documentation controls. The common expense claim problems.
 
-hosted_guests:
+food_for_several:
   type: noul
-  instructions: Did this expense pay for guests from outside the company, such as customers or suppliers? Use `expense_purpose` together with `invoice_text`.
+  instructions: Does `invoice_text` show food or drink for more than one person?
   criteria:
-    "true": The expense includes hosting people from outside the company, for example a meal or event with customers or suppliers.
-    "false": Only the employee or colleagues used what was paid for, even if the trip was to meet someone outside the company.
+    "true": The lines show meals or drinks for two or more people, for example "3 x Hovedrett" or two main courses.
+    "false": The food or drink is for one person, or there is no food or drink.
 
-guests_named:
+diners_named:
   type: noul
-  instructions: Does `expense_purpose` name the guests from outside the company, or the company they came from?
+  instructions: Does `expense_purpose` say who ate or drank, by name, company or group?
   criteria:
-    "true": At least one guest's name or the guests' company is written in `expense_purpose`.
-    "false": '`expense_purpose` names no guest and no company, for example "customer dinner".'
+    "true": 'At least one person, company or group who ate or drank is named, for example "Per Lund from Sølvtind Rør AS" or "the project group".'
+    "false": '`expense_purpose` does not say who ate or drank, for example "customer dinner" or "dinner".'
 
 purpose_fits_receipt:
   type: noul

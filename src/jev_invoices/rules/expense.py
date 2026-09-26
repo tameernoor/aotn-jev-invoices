@@ -46,7 +46,6 @@ def apply_tax_rules(judgments, *, lines, invoice_text, employee_country, vendor_
     reasons: list[str] = []
     flags: list[str] = []
     foreign_purchase = employee_country.upper() != vendor_country.upper()
-    guests = j.hosted_guests
 
     coded = []
     for i, line in enumerate(lines):
@@ -55,8 +54,6 @@ def apply_tax_rules(judgments, *, lines, invoice_text, employee_country, vendor_
             code = NO_VAT_TREATMENT
         elif category in LINE_CODES:
             code, reason = LINE_CODES[category]
-            if category == "served_food" and guests:
-                reason = "Customer entertainment (representasjon): no deduction, § 8-3 (1) e."
             if reason not in reasons:
                 reasons.append(reason)
         else:
@@ -84,8 +81,9 @@ def apply_tax_rules(judgments, *, lines, invoice_text, employee_country, vendor_
         flags.append(f"Not valid documentation: {document.replace('_', ' ')}.")
     if j.no("purpose_fits_receipt"):
         flags.append("What was bought does not fit the stated purpose.")
-    if guests and not j.guests_named:
-        flags.append("Customer entertainment must name the guests or their company.")
+    if any(line["category"] in ("served_food", "alcohol") for line in coded) and j.food_for_several:
+        if not j.diners_named:
+            flags.append("Hospitality must say who ate or drank (bokføringsforskriften § 5-10).")
     if j.score("purpose_detail") < GENERIC_PURPOSE_BELOW:
         flags.append("The purpose is missing or too generic.")
     if j.uncertain:
