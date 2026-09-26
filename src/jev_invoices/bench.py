@@ -92,6 +92,16 @@ def _decimal_safe(value):
     return value
 
 
+def _lines_without_text(value):
+    """Drop each coded line's `text`, so the English bench run (whose request carries
+    `lines_en`'s translated text) can still match a sample's expected `lines`, which are
+    written in the receipt's original language. amount, category and saft_code still
+    have to agree."""
+    if not isinstance(value, list):
+        return value
+    return [{k: v for k, v in line.items() if k != "text"} if isinstance(line, dict) else line for line in value]
+
+
 def computed_check(kind: str, request_body: dict, judgments: dict, expected_computed: dict) -> dict:
     """Run the real rules on the real judgments, with the same arguments app.py passes."""
     body = REQUEST_MODELS[kind].model_validate(request_body)
@@ -119,8 +129,11 @@ def computed_check(kind: str, request_body: dict, judgments: dict, expected_comp
 
     differences = {}
     for key, want in expected_computed.items():
+        got = computed.get(key)
+        if key == "lines":
+            want, got = _lines_without_text(want), _lines_without_text(got)
         want_safe = _decimal_safe(want)
-        got_safe = _decimal_safe(computed.get(key))
+        got_safe = _decimal_safe(got)
         if got_safe != want_safe:
             differences[key] = {"expected": want_safe, "got": got_safe}
     return {"matches": not differences, "differences": differences}

@@ -185,3 +185,23 @@ def test_a_row_with_a_totals_by_code_mismatch_serialises_to_json():
         "expected": {"13": "845.00"},
         "got": {"1": "845.00"},
     }
+
+
+def test_computed_check_ignores_line_text_so_the_english_run_still_matches():
+    # The English bench run sends lines_en's translated text; the sample's expected
+    # `lines` are written in the receipt's original language. amount, category and
+    # saft_code all agree, so this must still count as a match.
+    sample = json.loads((SAMPLES_DIR / "expense" / "taxi.json").read_text(encoding="utf-8"))
+    request = {**sample["request"], "invoice_text": sample["text_en"], "lines": sample["lines_en"]}
+    assert request["lines"][0]["text"] != sample["expected"]["computed"]["lines"][0]["text"]
+
+    judgments = answers(
+        hosted_guests=0.05,
+        guests_named=0.05,
+        purpose_fits_receipt=0.95,
+        receipt_kind="proof_of_purchase",
+        purpose_detail=level(1),
+        line_1="transport",
+    )
+    result = computed_check("expense", request, judgments, sample["expected"]["computed"])
+    assert result == {"matches": True, "differences": {}}
