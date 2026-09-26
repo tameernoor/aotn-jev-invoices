@@ -74,15 +74,20 @@ def score(judgments: dict, expected: dict) -> dict:
     return {"correct": correct, "uncertain": uncertain, "misses": misses, "total": len(expected)}
 
 
+CENTS = Decimal("0.01")
+
+
 def _decimal_safe(value):
-    """Recursively canonicalise Decimal amounts and decimal-shaped strings to str(Decimal(x)),
-    so a JSON-loaded expected value (amounts as strings) and a real Decimal from the rules
-    compare equal regardless of which side they came from."""
+    """Recursively canonicalise Decimal amounts and decimal-shaped strings to a two-decimal
+    string via quantize(Decimal("0.01")), so a JSON-loaded expected value (amounts as
+    strings), a real Decimal from the rules, and either side's trailing zeros all compare
+    equal numerically regardless of which side they came from: "845" and "845.00" both
+    canonicalise to "845.00"."""
     if isinstance(value, Decimal):
-        return str(value)
+        return str(value.quantize(CENTS))
     if isinstance(value, str):
         try:
-            return str(Decimal(value))
+            return str(Decimal(value).quantize(CENTS))
         except InvalidOperation:
             return value
     if isinstance(value, dict):

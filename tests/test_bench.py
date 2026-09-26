@@ -7,19 +7,19 @@ from jev_invoices.bench import SAMPLES_DIR, computed_check, load_samples, score,
 
 def test_score_uses_the_apps_thresholds_and_reports_uncertain_separately():
     judgments = answers(
-        alcohol_charged=0.9, served_food_charged=0.5, transport_charged=0.1, receipt_kind="proof_of_purchase"
+        hosted_guests=0.9, guests_named=0.5, purpose_fits_receipt=0.1, receipt_kind="proof_of_purchase"
     )
     result = score(
         judgments,
         {
-            "alcohol_charged": True,
-            "served_food_charged": True,
-            "transport_charged": True,
+            "hosted_guests": True,
+            "guests_named": True,
+            "purpose_fits_receipt": True,
             "receipt_kind": "proof_of_purchase",
         },
     )
     assert result == {
-        "correct": 2, "uncertain": ["served_food_charged"], "misses": ["transport_charged"], "total": 4
+        "correct": 2, "uncertain": ["guests_named"], "misses": ["purpose_fits_receipt"], "total": 4
     }
 
 
@@ -96,7 +96,7 @@ def test_summarise_per_language():
         {
             "lang": "no",
             "correct": 6,
-            "uncertain": ["served_food_charged"],
+            "uncertain": ["guests_named"],
             "misses": [],
             "total": 7,
             "computed": {"matches": True, "differences": {}},
@@ -194,6 +194,25 @@ def test_computed_check_ignores_line_text_so_the_english_run_still_matches():
     sample = json.loads((SAMPLES_DIR / "expense" / "taxi.json").read_text(encoding="utf-8"))
     request = {**sample["request"], "invoice_text": sample["text_en"], "lines": sample["lines_en"]}
     assert request["lines"][0]["text"] != sample["expected"]["computed"]["lines"][0]["text"]
+
+    judgments = answers(
+        hosted_guests=0.05,
+        guests_named=0.05,
+        purpose_fits_receipt=0.95,
+        receipt_kind="proof_of_purchase",
+        purpose_detail=level(1),
+        line_1="transport",
+    )
+    result = computed_check("expense", request, judgments, sample["expected"]["computed"])
+    assert result == {"matches": True, "differences": {}}
+
+
+def test_computed_check_matches_amounts_numerically_regardless_of_trailing_zeros():
+    # A line amount of "845" (no decimals) must still match the sample's expected
+    # "845.00" in both `lines` and `totals_by_code`, since they are the same amount.
+    sample = json.loads((SAMPLES_DIR / "expense" / "taxi.json").read_text(encoding="utf-8"))
+    line = {**sample["request"]["lines"][0], "amount": "845"}
+    request = {**sample["request"], "lines": [line]}
 
     judgments = answers(
         hosted_guests=0.05,

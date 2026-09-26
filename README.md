@@ -62,6 +62,20 @@ uv run --env-file .env uvicorn jev_invoices.app:create_app --factory
 
 Open http://127.0.0.1:8000/docs to try the endpoints.
 
+An expense request carries its receipt lines as data:
+
+```json
+{
+  "invoice_text": "...",
+  "lines": [{"text": "Tur: Oslo lufthavn – Majorstuen", "amount": "845.00"}],
+  "employee_country": "NO",
+  "vendor_country": "NO",
+  "expense_purpose": "Hjemreise fra konferanse"
+}
+```
+
+The lines arrive already extracted, the way a receipt scanner delivers them, and each amount is the line's total, not a unit price. If `lines` is left out, the invoice goes to review with "The receipt lists nothing that was bought."
+
 Send a sample:
 
 ```sh
@@ -89,7 +103,7 @@ Every record goes to `out/invoices.sqlite` and `out/<id>.json`. A record keeps `
 uv run --env-file .env python -m jev_invoices.bench
 ```
 
-Runs every sample with its Norwegian text and with an English translation, and writes `out/bench.json`. It scores Jev's answers at the app's own thresholds, reports uncertain answers separately from misses, and checks every value in each sample's expected computed result against the rules' output, not only `needs_review`, `totals_by_code` or `decision`. On the card-slip sample, Jev can infer served food from the shop's name, so that sample's computed values can differ from the literal expectation. TypeSafe says English is where Jev is most accurate, so this shows how much Norwegian costs.
+Runs every sample with its Norwegian text and with an English translation, and writes `out/bench.json`. It scores Jev's answers at the app's own thresholds, reports uncertain answers separately from misses, and checks every value in each sample's expected computed result against the rules' output, not only `needs_review`, `totals_by_code` or `decision`; when comparing, line text is ignored, so the English run is judged on category, amount and code. TypeSafe says English is where Jev is most accurate, so this shows how much Norwegian costs.
 
 ## Tests
 
@@ -102,5 +116,7 @@ uv run --env-file .env pytest -m live -v        # one real call
 
 - The VAT rules are illustrative and simplified. They are not tax advice. Codes are Skatteetaten's SAF-T standard tax codes.
 - Code only generates a duplicate question for earlier invoices dated inside the 60-day resend window, and a request carries at most 50 earlier invoices.
-- Invoice text is expected to be extracted already. There is no OCR.
+- Invoice text and receipt lines are expected to arrive already extracted. There is no OCR.
+- Amounts are summed as given; there is no currency conversion.
+- A foreign vendor codes every line 0 (no Norwegian deduction).
 - Setting `TYPESAFE_BASE_URL` points the same code at any server that speaks the same API. `cost_usd` always uses Jev's price, so it is only accurate when the server behind that URL is Jev.
