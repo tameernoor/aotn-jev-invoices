@@ -1,6 +1,8 @@
 # jev-invoices
 
-Companion code for the article "The classifier you don't have to train".
+This repo is part of aotn, a series of small example projects. Each project goes with one article and lives in its own repo, named `aotn-<project>`. This one is the companion code for the article "The classifier you don't have to train".
+
+The code is here to learn from. It shows one pattern in a form small enough to read in one sitting, and it is not built or tested for production use. The invoices and receipts in `samples/` are synthetic, the VAT rules are simplified, and the API has no user authentication. Read it, run it and copy the ideas, but do not point it at real invoices or use it to file VAT.
 
 Jev, TypeSafe AI's System One model, answers narrow questions about an invoice. Is it accommodation? Is there alcohol? Does the text announce a new bank account? Plain Python rules turn those answers into a VAT code or an approve, hold or review decision. The model never sees the rules, and the rules never call the model.
 
