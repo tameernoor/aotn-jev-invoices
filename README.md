@@ -1,8 +1,14 @@
 # jev-invoices
 
-This repo is part of aotn, a series of small example projects. Each project goes with one article and lives in its own repo, named `aotn-<project>`. This one is the companion code for the article "The classifier you don't have to train".
+**Part of aotn**, a series of small educational example projects that go with the article "The classifier you don't have to train", about TypeSafe's Jev. Each project gives Jev a different kind of text, asks it narrow typed questions, and lets plain code make every decision. Each one then measures itself against an answer key it did not tune on, and says where it falls short.
 
-The code is here to learn from. It shows one pattern in a form small enough to read in one sitting, and it is not built or tested for production use. The invoices and receipts in `samples/` are synthetic, the VAT rules are simplified, and the API has no user authentication. Read it, run it and copy the ideas, but do not point it at real invoices or use it to file VAT.
+The code is here to learn from, not to run in production. Each project shows one pattern in a form small enough to read in one sitting. The rules are illustrative, and none of it is tax, engineering or political advice.
+
+- [aotn-jev-invoices](https://github.com/tameernoor/aotn-jev-invoices): receipts and supplier invoices, VAT codes and approval
+- [aotn-jev-turbine-triage](https://github.com/tameernoor/aotn-jev-turbine-triage): a year of real wind turbine alarms, triaged and checked against the operator's own labels
+- [aotn-jev-stortinget](https://github.com/tameernoor/aotn-jev-stortinget): did the minister answer the question? A full session of the Norwegian parliament
+
+In this project the invoices and receipts in `samples/` are synthetic, the VAT rules are simplified, and the API has no user authentication. Read it, run it and copy the ideas, but do not point it at real invoices or use it to file VAT.
 
 Jev, TypeSafe AI's System One model, answers narrow questions about an invoice. Is it accommodation? Is there alcohol? Does the text announce a new bank account? Plain Python rules turn those answers into a VAT code or an approve, hold or review decision. The model never sees the rules, and the rules never call the model.
 
